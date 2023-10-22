@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('qty_barang');
             $table->timestamp('tanggal_datang');
             $table->integer('diskon_pembelian');
-            $table->integer('ppn');
+            $table->integer('ppn')->nullable();
             $table->integer('total_harga');
             $table->string('type');
             $table->timestamps();

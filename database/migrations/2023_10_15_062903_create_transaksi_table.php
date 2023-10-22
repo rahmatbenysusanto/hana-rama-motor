@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('biaya_lain')->nullable();
             $table->integer('total_harga');
             $table->string('status');
-            $table->timestamp('tanggal_penjualan');
+            $table->timestamp('tanggal_penjualan')->nullable();
             $table->timestamp('tanggal_tempo')->nullable();
             $table->timestamps();
         });
