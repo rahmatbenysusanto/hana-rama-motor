@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('no_invoice');
             $table->integer('harga_diskon')->nullable();
             $table->integer('biaya_lain')->nullable();
+            $table->integer('jumlah_barang')->nullable();
+            $table->integer('qty')->nullable();
             $table->integer('total_harga');
             $table->string('status');
             $table->timestamp('tanggal_penjualan')->nullable();

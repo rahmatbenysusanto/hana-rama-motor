@@ -69,6 +69,12 @@ Route::group(['middleware' => 'ceklogin'], function () {
     Route::controller(\App\Http\Controllers\TransaksiController::class)->group(function () {
         Route::get('/tambah-transaksi', 'buat_transaksi')->name('buat_transaksi');
         Route::post('/tambah-transaksi', 'buat_transaksi_post')->name('buat_transaksi_post');
+        Route::get('/daftar-transaksi', 'daftar_transaksi')->name('daftar_transaksi');
+        Route::get('/detail-transaksi/{id}', 'detail_transaksi');
+        Route::get('/edit-transaksi/{id}', 'edit_transaksi');
+        Route::get('/cetak-nota-transaksi/{id}', 'cetak_nota_transaksi');
+
+        Route::get('/buat-sampel-sales', 'buat_sampel_sales')->name('buat_sampel_sales');
     });
 });
 

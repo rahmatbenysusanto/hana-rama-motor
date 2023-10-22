@@ -11,6 +11,7 @@ use App\Models\Pembayaran;
 use App\Models\Sales;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -47,10 +48,15 @@ class TransaksiController extends Controller
                     'harga_diskon'      => 0,
                     'biaya_lain'        => 0,
                     'total_harga'       => 0,
-                    'status'            => 'new',
+                    'status'            => 'penjualan',
                     'tanggal_penjualan' => $request->post('tanggal_penjualan'),
                     'tanggal_tempo'     => $request->post('tempo'),
+                    'jumlah_barang'     => 0,
+                    'qty'               => 0
                 ]);
+
+                $jumlah_barang = 0;
+                $qty_barang = 0;
 
                 $harga = 0;
                 $diskon_penjualan = $request->post('diskon_penjualan');
@@ -84,13 +90,18 @@ class TransaksiController extends Controller
 
                     Inventory::where('barang_id', $barang['id'])->decrement('stok', $barang['qty']);
                     $harga += $barang['total'];
+
+                    $jumlah_barang++;
+                    $qty_barang = $barang['qty'];
                 }
 
-                $totalDiskon = $harga - ($diskon_penjualan / 100);
+                $totalDiskon = $harga * ($diskon_penjualan / 100);
                 $totalHarga = $harga - $totalDiskon;
                 Transaksi::where('id', $transaksi->id)->update([
                     'harga_diskon'  => $totalDiskon,
-                    'total_harga'   => $totalHarga
+                    'total_harga'   => $totalHarga,
+                    'jumlah_barang' => $jumlah_barang,
+                    'qty'           => $qty_barang
                 ]);
 
             DB::commit();
@@ -123,11 +134,53 @@ class TransaksiController extends Controller
             'barang_id'             => $barang['id'],
             'inventory_detail_id'   => $detail->id,
             'harga'                 => $barang['harga'],
-            'diskon_harga'          => $barang['diskon'],
+            'diskon_barang'         => $barang['diskon'],
             'qty'                   => $barang['qty'],
             'total_diskon'          => $total_diskon,
             'total_harga'           => $barang['total']
         ]);
         return $total_diskon;
+    }
+
+    public function daftar_transaksi(): View
+    {
+        $dataTransaksi = Transaksi::with('sales', 'pelanggan', 'pembayaran')->get();
+
+        $transaksi = $dataTransaksi ?? [];
+
+        $title = "daftar transaksi";
+        return view('outbound.daftar', compact('title', 'transaksi'));
+    }
+
+    public function detail_transaksi($id): View
+    {
+        $dataTransaksi = Transaksi::with('sales', 'pelanggan', 'pembayaran')->where('id', $id)->first();
+        $dataTransaksiDetail = TransaksiDetail::with('barang')->where('transaksi_id', $dataTransaksi->id)->get();
+
+        $transaksi = $dataTransaksi ?? [];
+        $transaksiDetail = $dataTransaksiDetail ?? [];
+
+        $title = "daftar transaksi";
+        return view('outbound.detail', compact('title', 'transaksi', 'transaksiDetail'));
+    }
+
+    public function cetak_nota_transaksi($id)
+    {
+        $customPaper = [0, 0, 684, 792];
+        $pdf = Pdf::loadView('pdf.invoice', []);
+        $pdf->setPaper($customPaper, 'landscape');
+        return $pdf->stream('invoice.pdf');
+    }
+
+    public function buat_sampel_sales(): View
+    {
+        $dataSales = Sales::all();
+        $dataBarang = Barang::all();
+
+        $sales = $dataSales ?? [];
+        $barang  = $dataBarang ?? [];
+
+        $title = "buat sampel";
+        return view('outbound.buat_sampel', compact('title', 'sales', 'barang'));
     }
 }

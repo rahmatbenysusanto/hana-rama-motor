@@ -245,7 +245,7 @@
                         </a>
                     </li>
                     <li class="slide">
-                        <a href="#" class="side-menu__item">
+                        <a href="{{ route('daftar_transaksi') }}" class="side-menu__item {{ $title == "daftar transaksi" ? "active" : "" }}">
                             <div style="width: 20px;">
                                 <i class="fa-regular fa-notebook fa-lg"></i>
                             </div>
@@ -261,7 +261,7 @@
                         </a>
                     </li>
                     <li class="slide">
-                        <a href="#" class="side-menu__item">
+                        <a href="{{ route('buat_sampel_sales') }}" class="side-menu__item {{ $title == "buat sampel" ? "active" : "" }}">
                             <div style="width: 20px;">
                                 <i class="fa-regular fa-person-carry-box fa-lg"></i>
                             </div>

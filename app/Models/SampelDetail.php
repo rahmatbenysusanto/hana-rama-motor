@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class SampelDetail extends Model
+{
+    use HasFactory;
+    protected $table = "sampel_detail";
+    protected $fillable = ["sampel_id", "barang_id", "inventory_detail_id", "qty"];
+}
