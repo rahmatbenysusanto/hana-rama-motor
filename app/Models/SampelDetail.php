@@ -9,5 +9,5 @@ class SampelDetail extends Model
 {
     use HasFactory;
     protected $table = "sampel_detail";
-    protected $fillable = ["sampel_id", "barang_id", "inventory_detail_id", "qty"];
+    protected $fillable = ["sampel_id", "barang_id", "inventory_detail_id", "qty", "harga", "total_harga"];
 }

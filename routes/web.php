@@ -75,6 +75,7 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::get('/cetak-nota-transaksi/{id}', 'cetak_nota_transaksi');
 
         Route::get('/buat-sampel-sales', 'buat_sampel_sales')->name('buat_sampel_sales');
+        Route::post('/buat-sample-sales', 'buat_sampel_sales_post')->name('buat_sampel_sales_post');
     });
 });
 

@@ -296,7 +296,7 @@
 
             if (check === 0) {
                 $.ajax({
-                    url: "{{ route('buat_transaksi_post') }}",
+                    url: "{{ route('buat_sampel_sales_post') }}",
                     method: "POST",
                     data: {
                         sales: sales,

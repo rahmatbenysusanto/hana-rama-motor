@@ -9,6 +9,8 @@ use App\Models\Kategori;
 use App\Models\Pelanggan;
 use App\Models\Pembayaran;
 use App\Models\Sales;
+use App\Models\Sampel;
+use App\Models\SampelDetail;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -182,5 +184,99 @@ class TransaksiController extends Controller
 
         $title = "buat sampel";
         return view('outbound.buat_sampel', compact('title', 'sales', 'barang'));
+    }
+
+    public function buat_sampel_sales_post(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+                $sampel = Sampel::create([
+                    'sales_id'          => $request->post('sales'),
+                    'no_sampel'         => 'SPL-'.date('Ymd', time()) . rand(100, 1000),
+                    'jumlah_barang'     => 0,
+                    'qty'               => 0,
+                    'status'            => 'sampel',
+                    'total_harga'       => 0,
+                    'tanggal_sampel'    => $request->post('tanggal_pembuatan')
+                ]);
+
+                $jumlah_barang = 0;
+                $jumlah_qty = 0;
+                $total_harga = 0;
+                $dataBarang = $request->post('barang');
+                foreach ($dataBarang as $barang) {
+                    $inventory = Inventory::where('barang_id', $barang['id'])->first();
+                    $inventory_detail = InventoryDetail::where('inventory_id', $inventory->id)->where('qty', '!=', 0)->get();
+
+                    $total_harga += $barang['total'];
+                    $jumlah_qty += $barang['qty'];
+                    $jumlah_barang++;
+
+                    $qty = $barang['qty'];
+                    $loop = 0;
+                    foreach ($inventory_detail as $detail) {
+                        if ($qty != 0) {
+                            if ($qty <= $detail->qty && $loop == 0) {
+                                InventoryDetail::where('id', $detail->id)->decrement('qty', $barang['qty']);
+                                SampelDetail::create([
+                                    'sampel_id'             => $sampel->id,
+                                    'barang_id'             => $barang['id'],
+                                    'inventory_detail_id'   => $detail->id,
+                                    'qty'                   => $barang['qty'],
+                                    'harga'                 => $barang['harga'],
+                                    'total_harga'           => $barang['total']
+                                ]);
+                                $qty = 0;
+                            } else {
+                                if (($detail->qty - $qty) <= 0) {
+                                    InventoryDetail::where('id', $detail->id)->decrement('qty', $detail->qty);
+                                    SampelDetail::create([
+                                        'sampel_id'             => $sampel->id,
+                                        'barang_id'             => $barang['id'],
+                                        'inventory_detail_id'   => $detail->id,
+                                        'qty'                   => $barang['qty'],
+                                        'harga'                 => $barang['harga'],
+                                        'total_harga'           => $barang['total']
+                                    ]);
+                                    $qty = $qty - $detail->qty;
+                                } else {
+                                    InventoryDetail::where('id', $detail->id)->decrement('qty', $qty);
+                                    SampelDetail::create([
+                                        'sampel_id'             => $sampel->id,
+                                        'barang_id'             => $barang['id'],
+                                        'inventory_detail_id'   => $detail->id,
+                                        'qty'                   => $barang['qty'],
+                                        'harga'                 => $barang['harga'],
+                                        'total_harga'           => $barang['total']
+                                    ]);
+                                    $qty = 0;
+                                }
+                            }
+
+                            $loop++;
+                        }
+                    }
+                    Inventory::where('barang_id', $barang['id'])->decrement('stok', $barang['qty']);
+                }
+
+                Sampel::where('id', $sampel->id)->update([
+                    'jumlah_barang'     => $jumlah_barang,
+                    'qty'               => $jumlah_qty,
+                    'total_harga'       => $total_harga,
+                ]);
+
+            DB::commit();
+            return response([
+                'status'     => true,
+                'message'    => "Buat sample berhasil"
+            ]);
+        } catch (\Exception $err) {
+            DB::rollBack();
+            Log::error('Buat Sampel, ' . $err->getMessage());
+            return response([
+               'status'     => false,
+               'message'    => "Buat sample error"
+            ]);
+        }
     }
 }

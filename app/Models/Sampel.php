@@ -9,5 +9,5 @@ class Sampel extends Model
 {
     use HasFactory;
     protected $table = "sampel";
-    protected $fillable = ["sales_id", "no_sampel", "jumlah_barang", "qty", "status"];
+    protected $fillable = ["sales_id", "no_sampel", "jumlah_barang", "qty", "status", "total_harga", "tanggal_sampel"];
 }

@@ -17,6 +17,8 @@ return new class extends Migration
             $table->integer('barang_id');
             $table->integer('inventory_detail_id');
             $table->integer('qty');
+            $table->integer('harga');
+            $table->integer('total_harga');
             $table->timestamps();
         });
     }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('qty');
             $table->timestamp('tanggal_sampel');
             $table->string('status');
+            $table->integer('total_harga');
             $table->timestamps();
         });
     }
