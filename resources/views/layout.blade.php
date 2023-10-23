@@ -116,8 +116,8 @@
                                 <img src="https://php.spruko.com/ynex/ynex/assets/images/faces/9.jpg" alt="img" width="32" height="32" class="rounded-circle">
                             </div>
                             <div class="d-sm-block d-none">
-                                <p class="fw-semibold mb-0 lh-1">Json Taylor</p>
-                                <span class="op-7 fw-normal d-block fs-11">Web Designer</span>
+                                <p class="fw-semibold mb-0 lh-1">{{ Session::get('data_user')->name }}</p>
+                                <span class="op-7 fw-normal d-block fs-11">Admin Gudang</span>
                             </div>
                         </div>
                     </a>
@@ -261,7 +261,7 @@
                         </a>
                     </li>
                     <li class="slide">
-                        <a href="#" class="side-menu__item">
+                        <a href="{{ route('return_transaksi') }}" class="side-menu__item {{ $title == "return transaksi" ? "active" : "" }}">
                             <div style="width: 20px;">
                                 <i class="fa-solid fa-arrow-rotate-left fa-lg"></i>
                             </div>

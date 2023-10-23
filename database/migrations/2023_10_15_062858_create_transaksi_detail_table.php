@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('qty');
             $table->integer('total_diskon');
             $table->integer('total_harga');
+            $table->integer('status');
             $table->timestamps();
         });
     }

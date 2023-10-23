@@ -25,6 +25,7 @@
                                 <th>Jumlah Barang</th>
                                 <th>Total QTY</th>
                                 <th>Total Harga</th>
+                                <th>Status</th>
                                 <th>Tanggal Penjualan</th>
                                 <th>Tanggal Tempo</th>
                                 <th>Action</th>
@@ -41,6 +42,13 @@
                                         <td>{{ $tra->jumlah_barang }}</td>
                                         <td>{{ $tra->qty }}</td>
                                         <td>@currency($tra->total_harga)</td>
+                                        <td>
+                                            @if($tra->status == "penjualan")
+                                                <span class="badge bg-success-transparent">Normal</span>
+                                            @else
+                                                <span class="badge bg-danger-transparent">Return</span>
+                                            @endif
+                                        </td>
                                         <td>{{ tanggal_format($tra->tanggal_penjualan) }}</td>
                                         <td>
                                             @if($tra->tanggal_tempo != null)

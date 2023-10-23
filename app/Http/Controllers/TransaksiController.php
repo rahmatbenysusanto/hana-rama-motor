@@ -98,7 +98,7 @@ class TransaksiController extends Controller
                     $harga += $barang['total'];
 
                     $jumlah_barang++;
-                    $qty_barang = $barang['qty'];
+                    $qty_barang += $barang['qty'];
                 }
 
                 $totalDiskon = $harga * ($diskon_penjualan / 100);
@@ -379,6 +379,97 @@ class TransaksiController extends Controller
             DB::rollBack();
             Log::error('Return Sampel, ' . $err->getMessage());
             Session::flash('error', 'Proses Return Sampel Gagal');
+            return back();
+        }
+    }
+
+    public function return_transaksi()
+    {
+        $dataTransaksi = Transaksi::with('sales', 'pelanggan', 'pembayaran')->get();
+
+        $transaksi = $dataTransaksi ?? [];
+
+        $title = "return transaksi";
+        return view('outbound.return_transaksi', compact('title', 'transaksi'));
+    }
+
+    public function proses_return_transaksi($id)
+    {
+        $dataTransaksi = Transaksi::with('sales', 'pelanggan', 'pembayaran')->where('id', $id)->first();
+        $dataTransaksiDetail = TransaksiDetail::with('barang')->where('transaksi_id', $dataTransaksi->id)->get();
+
+        $transaksi = $dataTransaksi ?? [];
+        $transaksiDetail = $dataTransaksiDetail ?? [];
+
+        $title = "return transaksi";
+        return view('outbound.proses_return_transaksi', compact('title', 'transaksi', 'transaksiDetail'));
+    }
+
+    public function proses_return_transaksi_post(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        try {
+            DB::beginTransaction();
+                $transaksiDetailId = $request->post('transaksiDetailId');
+                $status = $request->post('status');
+                $jumlah = $request->post('jumlah');
+
+                for ($a = 0; $a < count($transaksiDetailId); $a++) {
+                    if ($jumlah[$a] != 0 && $status != 1) {
+                        if ($status[$a] == 2) {
+                            // Barang Rusak
+                            $transaksiDetail = TransaksiDetail::where('id', $transaksiDetailId[$a])->first();
+                            $hargaSatuan = $transaksiDetail->total_harga / $transaksiDetail->qty;
+                            $harga = $hargaSatuan * $jumlah[$a];
+                            Transaksi::where('id', $transaksiDetail->transaksi_id)->decrement('total_harga', $harga);
+                            TransaksiDetail::where('id', $transaksiDetail->id)->decrement('total_harga', $harga);
+                            TransaksiDetail::where('id', $transaksiDetail->id)->update([
+                                'status'    =>  2
+                            ]);
+
+                            Transaksi::where('id', $transaksiDetail->transaksi_id)->update([
+                                'status'    => 'return'
+                            ]);
+
+                            $checkBarangRusak = BarangRusak::where('barang_id', $transaksiDetail->barang_id)->count();
+
+                            if ($checkBarangRusak == 0) {
+                                $inboundDetail = InboundDetail::where('barang_id', $transaksiDetail->barang_id)->first();
+                                $inbound = Inbound::where('id', $inboundDetail->id)->first();
+                                BarangRusak::create([
+                                    'barang_id'     => $transaksiDetail->barang_id,
+                                    'supplier_id'   => $inbound->supplier_id,
+                                    'stok'          => $jumlah[$a]
+                                ]);
+                            } else {
+                                BarangRusak::where('barang_id', $transaksiDetail->barang_id)->increment('stok', $jumlah[$a]);
+                            }
+                        } elseif ($status[$a] == 3) {
+                            // Barang Kembali
+                            $transaksiDetail = TransaksiDetail::where('id', $transaksiDetailId[$a])->first();
+                            $hargaSatuan = $transaksiDetail->total_harga / $transaksiDetail->qty;
+                            $harga = $hargaSatuan * $jumlah[$a];
+                            Transaksi::where('id', $transaksiDetail->transaksi_id)->decrement('total_harga', $harga);
+                            TransaksiDetail::where('id', $transaksiDetail->id)->decrement('total_harga', $harga);
+                            TransaksiDetail::where('id', $transaksiDetail->id)->update([
+                                'status'    =>  3
+                            ]);
+
+                            Transaksi::where('id', $transaksiDetail->transaksi_id)->update([
+                                'status'    => 'return'
+                            ]);
+
+                            Inventory::where('barang_id', $transaksiDetail->barang_id)->increment('stok', $jumlah[$a]);
+                            InventoryDetail::where('id', $transaksiDetail->inventory_detail_id)->increment('qty', $jumlah[$a]);
+                        }
+                    }
+                }
+            DB::commit();
+            Session::flash('success', 'Return Transaksi Berhasil');
+            return back();
+        } catch (\Exception $err) {
+            DB::rollBack();
+            Log::error('Return Transaksi, ' . $err->getMessage());
+            Session::flash('error', 'Return Transaksi Gagal');
             return back();
         }
     }
