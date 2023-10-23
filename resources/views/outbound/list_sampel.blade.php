@@ -44,7 +44,7 @@
                                                 </button>
                                                 <ul class="dropdown-menu">
                                                     <li><a class="dropdown-item" href="/detail-sampel/{{ $sam->id }}">Lihat Detail</a></li>
-                                                    <li><a class="dropdown-item" href="/cetak-nota-sampel/{{ $sam->id }}">Cetak Nota</a></li>
+                                                    <li><a class="dropdown-item" target="_blank" href="/cetak-nota-sampel/{{ $sam->id }}">Cetak Nota</a></li>
                                                 </ul>
                                             </div>
                                         </td>

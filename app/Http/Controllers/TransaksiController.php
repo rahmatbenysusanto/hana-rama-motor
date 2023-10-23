@@ -301,4 +301,13 @@ class TransaksiController extends Controller
         $title = "list sampel";
         return view('outbound.detail_sampel', compact('title', 'sampel', 'sampelDetail'));
     }
+
+    public function cetak_nota_sampel($id)
+    {
+        $sampel = Sampel::with('sales')->where('id', $id)->first();
+        $sampelDetail = SampelDetail::with('barang')->where('sampel_id', $id)->get();
+
+        $pdf = Pdf::loadView('pdf.sampel', ['sampel' => $sampel, 'sampelDetail' => $sampelDetail]);
+        return $pdf->stream('nota-sampel.pdf');
+    }
 }
