@@ -279,4 +279,26 @@ class TransaksiController extends Controller
             ]);
         }
     }
+
+    public function list_sampel(): View
+    {
+        $dataSampel = Sampel::with('sales')->get();
+
+        $sampel = $dataSampel ?? [];
+
+        $title = "list sampel";
+        return view('outbound.list_sampel', compact('title', 'sampel'));
+    }
+
+    public function detail_sampel($id): View
+    {
+        $dataSampel = Sampel::with('sales')->where('id', $id)->first();
+        $dataSampelDetail = SampelDetail::with('barang')->where('sampel_id', $id)->get();
+
+        $sampel = $dataSampel ?? [];
+        $sampelDetail = $dataSampelDetail ?? [];
+
+        $title = "list sampel";
+        return view('outbound.detail_sampel', compact('title', 'sampel', 'sampelDetail'));
+    }
 }

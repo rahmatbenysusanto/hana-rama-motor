@@ -265,7 +265,23 @@
                             <div style="width: 20px;">
                                 <i class="fa-regular fa-person-carry-box fa-lg"></i>
                             </div>
-                            <span class="ms-3 side-menu__label">Sampel Sales</span>
+                            <span class="ms-3 side-menu__label">Buat Sampel</span>
+                        </a>
+                    </li>
+                    <li class="slide">
+                        <a href="{{ route('list_sampel') }}" class="side-menu__item {{ $title == "list sampel" ? "active" : "" }}">
+                            <div style="width: 20px;">
+                                <i class="fa-regular fa-list-check fa-lg"></i>
+                            </div>
+                            <span class="ms-3 side-menu__label">List Sampel</span>
+                        </a>
+                    </li>
+                    <li class="slide">
+                        <a href="{{ route('return_sampel') }}" class="side-menu__item {{ $title == "return sampel" ? "active" : "" }}">
+                            <div style="width: 20px;">
+                                <i class="fa-regular fa-box-circle-check fa-lg"></i>
+                            </div>
+                            <span class="ms-3 side-menu__label">Return Sampel</span>
                         </a>
                     </li>
 

@@ -76,6 +76,9 @@ Route::group(['middleware' => 'ceklogin'], function () {
 
         Route::get('/buat-sampel-sales', 'buat_sampel_sales')->name('buat_sampel_sales');
         Route::post('/buat-sample-sales', 'buat_sampel_sales_post')->name('buat_sampel_sales_post');
+        Route::get('/list-sampel', 'list_sampel')->name('list_sampel');
+        Route::get('/detail-sampel/{id}', 'detail_sampel');
+        Route::get('/return-sampel', 'return_sampel')->name('return_sampel');
     });
 });
 
