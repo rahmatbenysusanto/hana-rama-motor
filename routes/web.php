@@ -80,6 +80,8 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::get('/detail-sampel/{id}', 'detail_sampel');
         Route::get('/cetak-nota-sampel/{id}', 'cetak_nota_sampel');
         Route::get('/return-sampel', 'return_sampel')->name('return_sampel');
+        Route::get('/proses-return-sampel/{id}', 'proses_return_sampel');
+        Route::post('/proses-return-sampel', 'proses_return_sampel_post')->name('proses_return_sampel_post');
     });
 });
 

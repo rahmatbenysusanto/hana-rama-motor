@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
+use App\Models\BarangRusak;
+use App\Models\Inbound;
+use App\Models\InboundDetail;
 use App\Models\Inventory;
 use App\Models\InventoryDetail;
 use App\Models\Kategori;
@@ -17,6 +20,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class TransaksiController extends Controller
@@ -309,5 +313,73 @@ class TransaksiController extends Controller
 
         $pdf = Pdf::loadView('pdf.sampel', ['sampel' => $sampel, 'sampelDetail' => $sampelDetail]);
         return $pdf->stream('nota-sampel.pdf');
+    }
+
+    public function return_sampel(): View
+    {
+        $dataSampel = Sampel::with('sales')->get();
+
+        $sampel = $dataSampel ?? [];
+
+        $title = "return sampel";
+        return view('outbound.return_sampel', compact('title', 'sampel'));
+    }
+
+    public function proses_return_sampel($id)
+    {
+        $dataSampel = Sampel::with('sales')->where('id', $id)->first();
+        $dataSampelDetail = SampelDetail::with('barang')->where('sampel_id', $id)->get();
+
+        $sampel = $dataSampel ?? [];
+        $sampelDetail = $dataSampelDetail ?? [];
+
+        $title = "return sampel";
+        return view('outbound.proses_sampel_return', compact('title', 'sampel', 'sampelDetail'));
+    }
+
+    public function proses_return_sampel_post(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+                $sampelDetailId = $request->post('sampel_detail_id');
+                $status = $request->post('status');
+
+                for ($a = 0; $a < count($sampelDetailId); $a++) {
+                    $sampleDetail = SampelDetail::where('id', $sampelDetailId[$a])->first();
+                    $checkBarangRusak = BarangRusak::where('barang_id', $sampleDetail->barang_id)->count();
+
+                    if ($status[$a] == 2) {
+                        if ($checkBarangRusak == 0) {
+                            $inboundDetail = InboundDetail::where('barang_id', $sampleDetail->barang_id)->first();
+                            $inbound = Inbound::where('id', $inboundDetail->id)->first();
+                            BarangRusak::create([
+                                'barang_id'     => $sampleDetail->barang_id,
+                                'supplier_id'   => $inbound->supplier_id,
+                                'stok'          => $sampleDetail->qty
+                            ]);
+                        } else {
+                            BarangRusak::where('barang_id', $sampleDetail->barang_id)->increment('stok', $sampleDetail->qty);
+                        }
+                        SampelDetail::where('id', $sampleDetail->id)->update([
+                            'status'    => 2
+                        ]);
+                    } elseif ($status[$a] == 3) {
+                        Inventory::where('barang_id', $sampleDetail->barang_id)->increment('stok', $sampleDetail->qty);
+                        InventoryDetail::where('id', $sampleDetail->inventory_detail_id)->increment('qty', $sampleDetail->qty);
+                        SampelDetail::where('id', $sampleDetail->id)->update([
+                            'status'    => 3
+                        ]);
+                    }
+                }
+            DB::commit();
+
+            Session::flash('success', 'Proses Return Sampel Berhasil');
+            return back();
+        } catch (\Exception $err) {
+            DB::rollBack();
+            Log::error('Return Sampel, ' . $err->getMessage());
+            Session::flash('error', 'Proses Return Sampel Gagal');
+            return back();
+        }
     }
 }
