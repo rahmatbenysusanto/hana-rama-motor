@@ -200,6 +200,14 @@
                             <span class="ms-3 side-menu__label">Sparepart</span>
                         </a>
                     </li>
+                    <li class="slide">
+                        <a href="{{ route('barang_rusak') }}" class="side-menu__item {{ $title == "barang rusak" ? "active" : "" }}">
+                            <div style="width: 20px;">
+                                <i class="fa-sharp fa-regular fa-square-fragile fa-lg"></i>
+                            </div>
+                            <span class="ms-3 side-menu__label">Barang Rusak</span>
+                        </a>
+                    </li>
 
                     <li class="slide__category"><span class="category-name">Inbound</span></li>
                     <li class="slide">

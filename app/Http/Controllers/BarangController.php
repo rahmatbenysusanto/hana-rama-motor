@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
+use App\Models\BarangRusak;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -42,5 +43,15 @@ class BarangController extends Controller
     {
         $barang = Barang::where('id', $request->get('barang_id'))->first();
         return $barang;
+    }
+
+    public function barang_rusak()
+    {
+        $dataBarangRusak = BarangRusak::with('supplier', 'barang')->get();
+
+        $barangRusak = $dataBarangRusak ?? [];
+
+        $title = "barang rusak";
+        return view('barang.rusak', compact('title', 'barangRusak'));
     }
 }

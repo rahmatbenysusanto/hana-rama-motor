@@ -28,6 +28,7 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::get('/barang/oli', 'oli')->name('oli');
         Route::get('/barang/ban', 'ban')->name('ban');
         Route::get('/barang/sparepart', 'sparepart')->name('sparepart');
+        Route::get('/barang-rusak', 'barang_rusak')->name('barang_rusak');
         Route::get('/barang', 'find')->name('findBarang');
     });
 
