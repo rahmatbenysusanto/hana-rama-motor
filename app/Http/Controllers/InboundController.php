@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
+use App\Models\BarangRusak;
 use App\Models\Inbound;
 use App\Models\InboundDetail;
 use App\Models\Inventory;
@@ -81,7 +82,7 @@ class InboundController extends Controller
                 $barang = $request->post('barang');
                 $inbound = Inbound::create([
                     'supplier_id'       => $request->post('supplier'),
-                    'po_number'         => 'PO' . date('YmdHis', time()) . rand(100, 1000),
+                    'po_number'         => 'PO' . date('Ymd', time()) . rand(100, 1000),
                     'no_invoice'        => $request->post('invoice'),
                     'jumlah_barang'     => 0,
                     'qty_barang'        => 0,
@@ -165,7 +166,7 @@ class InboundController extends Controller
 
     public function daftar_pembelian(): View
     {
-        $result = Inbound::with('supplier')->get();
+        $result = Inbound::with('supplier')->where('type', 'pembelian')->get();
 
         $inbound = $result ?? [];
 
@@ -187,7 +188,7 @@ class InboundController extends Controller
 
     public function return_pembelian(): View
     {
-        $barang = Barang::with('kategori')->get();
+        $barang = BarangRusak::with('barang', 'barang.kategori')->get();
         $supplier = Supplier::all();
 
         $title = "return pembelian";
@@ -201,73 +202,42 @@ class InboundController extends Controller
             $barang = $request->post('barang');
             $inbound = Inbound::create([
                 'supplier_id'       => $request->post('supplier'),
-                'po_number'         => 'PO' . date('YmdHis', time()) . rand(100, 1000),
-                'no_invoice'        => $request->post('invoice'),
-                'jumlah_barang'     => 0,
+                'po_number'         => 'RTN' . date('Ymd', time()) . rand(100, 1000),
+                'no_invoice'        => null,
+                'jumlah_barang'     => count($barang),
                 'qty_barang'        => 0,
-                'tanggal_datang'    => $request->post('tanggal_datang'),
-                'diskon_pembelian'  => $request->post('diskon_pembelian'),
-                'ppn'               => $request->post('ppn'),
+                'tanggal_datang'    => $request->post('tanggal_return'),
+                'diskon_pembelian'  => null,
+                'ppn'               => null,
                 'total_harga'       => 0,
                 'type'              => 'return'
             ]);
 
-            $totalHarga = 0;
-            $totalQty = 0;
-            $qtyBarang = 0;
-
-            $ppn = $request->post('ppn');
-            $diskon_pembalian = $request->post('diskon_pembelian');
+            $total_harga = 0;
+            $jumlah_qty = 0;
             foreach ($barang as $b) {
-                $harga = $b['total'];
-
-                if ($diskon_pembalian != 0) {
-                    $diskon = $harga * ($diskon_pembalian / 100);
-                    $harga = $harga - $diskon;
-                }
-
-                if ($ppn != 0) {
-                    $diskon = $harga * ($ppn / 100);
-                    $harga = $harga + $diskon;
-                }
-
-                $totalHarga += $harga;
-
-                $totalQty += $b['qty'];
-                $qtyBarang++;
+                $inventory = Inventory::where('barang_id', $b['id'])->first();
+                $inventoryDetail = InventoryDetail::where('inventory_id', $inventory->id)->orderBy('id', 'DESC')->first();
                 InboundDetail::create([
                     'inbound_id'    => $inbound->id,
                     'barang_id'     => $b['id'],
                     'qty'           => $b['qty'],
-                    'harga'         => $b['harga'],
-                    'diskon'        => $b['diskon'],
-                    'total_harga'   => $harga
+                    'harga'         => $inventoryDetail->harga,
+                    'diskon'        => 0,
+                    'total_harga'   => $inventoryDetail->harga * $b['qty']
                 ]);
 
-                // Tambah Stok Inventory
-                Inventory::where('barang_id', $b['id'])->decrement('stok', $b['qty']);
+                BarangRusak::where('barang_id', $b['id'])->decrement('stok', $b['qty']);
 
-                // Inventory Detail
-                $inventory = Inventory::where('barang_id', $b['id'])->first();
-                $inventoryDetail = InventoryDetail::where('inventory_id', $inventory->id)
-                    ->where('harga', ($harga / $b['qty']))
-                    ->first();
-                if ($inventoryDetail != null) {
-                    InventoryDetail::where('id', $inventoryDetail->id)->increment('qty', $b['qty']);
-                } else {
-                    InventoryDetail::create([
-                        'inventory_id'  => $inventory->id,
-                        'harga'         => ($harga / $b['qty']),
-                        'qty'           => $b['qty']
-                    ]);
-                }
+                $total_harga += $inventoryDetail->harga * $b['qty'];
+                $jumlah_qty += $b['qty'];
             }
 
             Inbound::where('id', $inbound->id)->update([
-                'qty_barang'    => $totalQty,
-                'total_harga'   => $totalHarga,
-                'jumlah_barang' => $qtyBarang
+                'qty_barang'    => $jumlah_qty,
+                'total_harga'   => $total_harga
             ]);
+
             DB::commit();
             return response([
                 'status'    => true,
@@ -281,5 +251,27 @@ class InboundController extends Controller
                 'message'   => 'Return Gagal'
             ]);
         }
+    }
+
+    public function list_return_pembelian()
+    {
+        $result = Inbound::with('supplier')->where('type', 'return')->get();
+
+        $inbound = $result ?? [];
+
+        $title = 'list return pembelian';
+        return view('inbound.list_return', compact('title', 'inbound'));
+    }
+
+    public function detail_return_pembelian($id)
+    {
+        $result = Inbound::with('supplier', 'inboundDetail', 'inboundDetail.barang')
+            ->where('id', $id)
+            ->first();
+
+        $inbound = $result ?? [];
+
+        $title = 'list return pembelian';
+        return view('inbound.detail_return', compact('title', 'inbound'));
     }
 }

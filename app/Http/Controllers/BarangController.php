@@ -41,8 +41,12 @@ class BarangController extends Controller
 
     public function find(Request $request)
     {
-        $barang = Barang::where('id', $request->get('barang_id'))->first();
-        return $barang;
+        return Barang::where('id', $request->get('barang_id'))->first();
+    }
+
+    public function findBarangRusak(Request $request)
+    {
+        return BarangRusak::with('barang')->where('barang_id', $request->get('barang_id'))->first();
     }
 
     public function barang_rusak()

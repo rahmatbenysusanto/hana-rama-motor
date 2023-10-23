@@ -239,7 +239,15 @@
                             <div style="width: 20px;">
                                 <i class="fa-solid fa-arrow-rotate-left fa-lg"></i>
                             </div>
-                            <span class="ms-3 side-menu__label">Inbound Return</span>
+                            <span class="ms-3 side-menu__label">Pembalian Return</span>
+                        </a>
+                    </li>
+                    <li class="slide">
+                        <a href="{{ route('list_return_pembelian') }}" class="side-menu__item {{ $title == "list return pembelian" ? "active" : "" }}">
+                            <div style="width: 20px;">
+                                <i class="fa-light fa-square-list fa-lg"></i>
+                            </div>
+                            <span class="ms-3 side-menu__label">List Pembalian Return</span>
                         </a>
                     </li>
 

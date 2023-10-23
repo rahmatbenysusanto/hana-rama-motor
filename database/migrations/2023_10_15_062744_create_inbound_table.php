@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('inbound', function (Blueprint $table) {
             $table->id();
-            $table->integer('supplier_id');
-            $table->string('po_number');
+            $table->integer('supplier_id')->nullable();
+            $table->string('po_number')->nullable();
             $table->text('no_invoice')->nullable();
             $table->integer('jumlah_barang');
             $table->integer('qty_barang');
-            $table->timestamp('tanggal_datang');
-            $table->integer('diskon_pembelian');
+            $table->timestamp('tanggal_datang')->nullable();
+            $table->integer('diskon_pembelian')->nullable();
             $table->integer('ppn')->nullable();
             $table->integer('total_harga');
             $table->string('type');
