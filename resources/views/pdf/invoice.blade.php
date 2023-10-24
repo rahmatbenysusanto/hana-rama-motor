@@ -50,9 +50,9 @@
                 <tr>
                     <td style="width: 420px">
                         <p style="font-family:'LED Dot-Matrix';font-weight:normal;">HANA RAMA MOTOR (HRM)</p>
-                        <p>Pundung Rejo RT 03/01</p>
-                        <p>Jati Jaten Karanganyar Jawa Tengah (57731)</p>
-                        <p>Phone : 0895627637701</p>
+                        <p>Pundung Rejo RT 03/01 Jati</p>
+                        <p>Jaten Karanganyar Jawa Tengah (57731)</p>
+                        <p>Phone : 081917110590</p>
                     </td>
                     <td style="width: 200px; display: flex">
                         <h2></h2>
@@ -63,22 +63,22 @@
                                 <tr>
                                     <td>Number</td>
                                     <td class="ps-2">:</td>
-                                    <td class="ps-2">INV-202310220</td>
+                                    <td class="ps-2">{{ $transaksi->no_invoice }}</td>
                                 </tr>
                                 <tr>
                                     <td>Inv Date</td>
                                     <td class="ps-2">:</td>
-                                    <td class="ps-2">22 Oktober 2023</td>
+                                    <td class="ps-2">{{ tanggal_format($transaksi->tanggal_penjualan) }}</td>
                                 </tr>
                                 <tr>
                                     <td>Payment</td>
                                     <td class="ps-2">:</td>
-                                    <td class="ps-2">Transfer</td>
+                                    <td class="ps-2">{{ $transaksi->pembayaran->nama }}</td>
                                 </tr>
                                 <tr>
                                     <td>Sales</td>
                                     <td class="ps-2">:</td>
-                                    <td class="ps-2">Alif</td>
+                                    <td class="ps-2">{{ $transaksi->sales->nama }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -91,8 +91,8 @@
                 <tr>
                     <td class="d-flex">Customer   : </td>
                     <td class="ps-2">
-                        <p>Indonesia Motor</p>
-                        <p>Phone : 0895627637701</p>
+                        <p>{{ $transaksi->pelanggan->nama }}</p>
+                        <p>{{ $transaksi->pelanggan->no_hp }}</p>
                     </td>
                 </tr>
             </tbody>
@@ -117,57 +117,30 @@
                     <td></td>
                     <td></td>
                 </tr><div style="height: 10px"></div>
-                <tr>
-                    <td class="text-center">1</td>
-                    <td>Ban Maxxis 120/90 ring 14</td>
-                    <td class="text-center">10</td>
-                    <td class="text-center">Rp. 300.000</td>
-                    <td class="text-center">5%</td>
-                    <td class="text-center">Rp. 3.000.000</td>
-                </tr><div style="height: 10px"></div>
-                <tr>
-                    <td class="text-center">2</td>
-                    <td>Ban Maxxis 120/90 ring 14</td>
-                    <td class="text-center">10</td>
-                    <td class="text-center">Rp. 300.000</td>
-                    <td class="text-center">5%</td>
-                    <td class="text-center">Rp. 3.000.000</td>
-                </tr><div style="height: 10px"></div>
-                <tr>
-                    <td class="text-center">3</td>
-                    <td>Ban Maxxis 120/90 ring 14</td>
-                    <td class="text-center">10</td>
-                    <td class="text-center">Rp. 300.000</td>
-                    <td class="text-center">5%</td>
-                    <td class="text-center">Rp. 3.000.000</td>
-                </tr><div style="height: 10px"></div>
-                <tr>
-                    <td class="text-center">4</td>
-                    <td>Ban Maxxis 120/90 ring 14</td>
-                    <td class="text-center">10</td>
-                    <td class="text-center">Rp. 300.000</td>
-                    <td class="text-center">5%</td>
-                    <td class="text-center">Rp. 3.000.000</td>
-                </tr><div style="height: 10px"></div>
-                <tr>
-                    <td class="text-center">5</td>
-                    <td>Ban Maxxis 120/90 ring 14</td>
-                    <td class="text-center">10</td>
-                    <td class="text-center">Rp. 300.000</td>
-                    <td class="text-center">5%</td>
-                    <td class="text-center">Rp. 3.000.000</td>
-                </tr><div style="height: 10px"></div>
-                <tr>
-                    <td class="text-center">6</td>
-                    <td>Ban Maxxis 120/90 ring 14</td>
-                    <td class="text-center">10</td>
-                    <td class="text-center">Rp. 300.000</td>
-                    <td class="text-center">5%</td>
-                    <td class="text-center">Rp. 3.000.000</td>
-                </tr><div style="height: 10px"></div>
+                @php
+                    $total_harga = 0;
+                    $diskon_barang = 0;
+                @endphp
+                @foreach($barang as $detail)
+                    @php
+                        $total_harga += $detail->total_harga;
+                        $diskon_barang += $detail->total_diskon;
+                    @endphp
+                    <tr>
+                        <td class="text-center">{{ $loop->iteration }}</td>
+                        <td>{{ $detail->barang->nama_barang }}</td>
+                        <td class="text-center">{{ $detail->qty }}</td>
+                        <td class="text-center">@currency($detail->harga)</td>
+                        <td class="text-center">{{ $detail->diskon_barang }}%</td>
+                        <td class="text-center">@currency($detail->total_harga)</td>
+                    </tr><div style="height: 10px"></div>
+                @endforeach
             </tbody>
         </table>
         <div style="border-top: 1px dashed black"></div>
+        @if($transaksi->tanggal_tempo != null)
+            <p class="mt-1">Tanggal Tempo : {{ tanggal_format($transaksi->tanggal_tempo) }}</p>
+        @endif
         <table class="mb-5">
             <tr>
                 <th style="width: 50px" class="text-center"></th>
@@ -176,7 +149,7 @@
                 <th style="width: 100px" class="text-center"></th>
                 <th style="width: 50px" class="text-center"></th>
                 <th style="width: 150px">Total Harga</th>
-                <th style="width: 180px" class="text-end">Rp. 100.000.000</th>
+                <th style="width: 180px" class="text-end">@currency($total_harga)</th>
             </tr>
             <tr>
                 <th style="width: 50px" class="text-center"></th>
@@ -184,8 +157,8 @@
                 <th style="width: 100px" class="text-center"></th>
                 <th style="width: 100px" class="text-center"></th>
                 <th style="width: 50px" class="text-center"></th>
-                <th style="width: 180px">Diskon Barang</th>
-                <th style="width: 150px" class="text-end">Rp. 15.000.000</th>
+                <th style="width: 180px"></th>
+                <th style="width: 150px" class="text-end"></th>
             </tr>
             <tr>
                 <th style="width: 50px" class="text-center"></th>
@@ -194,7 +167,7 @@
                 <th style="width: 100px" class="text-center"></th>
                 <th style="width: 50px" class="text-center"></th>
                 <th style="width: 180px">Diskon Transaksi</th>
-                <th style="width: 150px" class="text-end">Rp. 0</th>
+                <th style="width: 150px" class="text-end">@currency($transaksi->harga_diskon)</th>
             </tr>
             <tr>
                 <th style="width: 50px" class="text-center"></th>
@@ -212,7 +185,7 @@
                 <th style="width: 100px" class="text-center"></th>
                 <th style="width: 50px" class="text-center"></th>
                 <th style="width: 180px">Total Tagihan</th>
-                <th style="width: 150px" class="text-end">Rp. 85.000.000</th>
+                <th style="width: 150px" class="text-end">@currency($transaksi->total_harga)</th>
             </tr>
             <tr>
                 <th style="width: 50px" class="text-center"></th>

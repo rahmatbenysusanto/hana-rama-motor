@@ -94,6 +94,12 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::get('/return-sampel', 'return_sampel')->name('return_sampel');
         Route::get('/proses-return-sampel/{id}', 'proses_return_sampel');
         Route::post('/proses-return-sampel', 'proses_return_sampel_post')->name('proses_return_sampel_post');
+
+        Route::get('/transaksi-khusus-pengambilan-barang', 'pengambilan_barang')->name('pengambilan_barang');
+        Route::post('/transaksi-khusus-pengambilan-barang', 'pengambilan_barang_post')->name('pengambilan_barang_post');
+        Route::get('/transaksi-khusus-sisa-barang', 'sisa_barang')->name('sisa_barang');
+        Route::get('/proses-pengembalian-barang/{id}', 'proses_pengembalian_barang')->name('proses_pengembalian_barang');
+        Route::post('/proses-pengembalian-barang', 'proses_pengembalian_barang_post')->name('proses_pengembalian_barang_post');
     });
 });
 

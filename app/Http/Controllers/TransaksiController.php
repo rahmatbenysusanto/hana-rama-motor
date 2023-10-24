@@ -16,6 +16,8 @@ use App\Models\Sampel;
 use App\Models\SampelDetail;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
+use App\Models\TransaksiKhusus;
+use App\Models\TransaksiKhususDetail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -173,9 +175,13 @@ class TransaksiController extends Controller
     public function cetak_nota_transaksi($id)
     {
         $dataTransaksi = Transaksi::with('sales', 'pelanggan', 'pembayaran')->where('id', $id)->first();
+        $dataTransaksiDetail = TransaksiDetail::with('barang')->where('transaksi_id', $dataTransaksi->id)->get();
+
+        $transaksi = $dataTransaksi ?? [];
+        $transaksiDetail = $dataTransaksiDetail ?? [];
 
         $customPaper = [0, 0, 684, 792];
-        $pdf = Pdf::loadView('pdf.invoice', []);
+        $pdf = Pdf::loadView('pdf.invoice', ['transaksi' => $transaksi, 'barang' => $transaksiDetail]);
         $pdf->setPaper($customPaper, 'landscape');
         return $pdf->stream('invoice.pdf');
     }
@@ -474,5 +480,93 @@ class TransaksiController extends Controller
             Session::flash('error', 'Return Transaksi Gagal');
             return back();
         }
+    }
+
+    public function pengambilan_barang()
+    {
+        $dataSales = Sales::all();
+        $dataBarang = Barang::all();
+
+        $sales = $dataSales ?? [];
+        $barang  = $dataBarang ?? [];
+
+        $title = "ambil barang";
+        return view('outbound.ambil_barang', compact('title', 'sales', 'barang'));
+    }
+
+    public function pengambilan_barang_post(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+                $transaksiKhusus = TransaksiKhusus::create([
+                    'sales_id'              => $request->post('sales'),
+                    'no_transaksi_khusus'   => 'TKHS-' . date('YmdHis', time()),
+                    'jumlah_barang'         => count($request->post('barang')),
+                    'qty'                   => 0,
+                    'tanggal_pengambilan'   => $request->post('tanggal_pengambilan')
+                ]);
+
+                $qty = 0;
+                $barang = $request->post('barang');
+
+                foreach ($barang as $b) {
+                    TransaksiKhususDetail::create([
+                        'transaksi_khusus_id'   => $transaksiKhusus->id,
+                        'barang_id'             => $b['id'],
+                        'qty'                   => $b['qty']
+                    ]);
+                    $qty += $b['qty'];
+                }
+
+                TransaksiKhusus::where('id', $transaksiKhusus->id)->update([
+                    'qty'   => $qty,
+                ]);
+            DB::commit();
+            Session::flash('success', 'Pengambilan Barang Berhasil');
+            return response([
+                'status'    => true,
+                'message'   => 'Pengambilan Barang Berhasil'
+            ]);
+        } catch (\Exception $err) {
+            DB::rollBack();
+            Log::error('Pengambilan Barang Error, ' . $err->getMessage());
+            Session::flash('error', 'Pengambilan Barang Gagal');
+            return response([
+                'status'    => false,
+                'message'   => 'Pengambilan Barang Gagal'
+            ]);
+        }
+    }
+
+    public function sisa_barang()
+    {
+        $transaksiKhusus = TransaksiKhusus::with('sales')->get();
+
+        $title = "sisa barang";
+        return view('outbound.sisa_barang', compact('title', 'transaksiKhusus'));
+    }
+
+    public function proses_pengembalian_barang($id)
+    {
+        $transaksiKhusus = TransaksiKhusus::with('sales')->where('id', $id)->first();
+        $transaksiKhususDetail = TransaksiKhususDetail::with('barang')->where('transaksi_khusus_id', $transaksiKhusus->id)->get();
+
+        $title = "sisa barang";
+        return view('outbound.proses_pengembalian', compact('title', 'transaksiKhusus', 'transaksiKhususDetail'));
+    }
+
+    public function proses_pengembalian_barang_post (Request $request)
+    {
+        $id = $request->post('id');
+        $qty = $request->post('qty');
+
+        for ($a = 0; $a < count($id); $a++) {
+            TransaksiKhususDetail::where('id', $id[$a])->update([
+                'qty_kembali'   => $qty[$a]
+            ]);
+        }
+
+        Session::flash('success', 'Proses Pengembalian Barang Berhasil');
+        return back();
     }
 }

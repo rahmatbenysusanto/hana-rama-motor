@@ -5,7 +5,7 @@
             <div class="card custom-card">
                 <div class="card-header">
                     <div class="card-title">
-                        Buat Pembelian Barang
+                        Ambil Barang
                     </div>
                 </div>
                 <div class="card-body">
@@ -13,40 +13,19 @@
                         <div class="row">
                             <div class="col-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Supplier</label>
-                                    <select class="form-control" id="supplier">
-                                        <option value="0">Pilih Supplier</option>
-                                        @foreach($supplier as $s)
+                                    <label class="form-label">Sales</label>
+                                    <select class="form-control" id="sales">
+                                        <option value="0">Pilih Sales</option>
+                                        @foreach($sales as $s)
                                             <option value="{{ $s->id }}">{{ $s->nama }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Tanggal Datang</label>
-                                    <input type="date" class="form-control" id="tanggal_datang" name="tanggal_datang">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">No Invoice</label>
-                                    <input type="text" class="form-control" id="invoice" name="invoice" placeholder="Masukan No Invoice">
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Diskon Pembelian</label>
+                                    <label class="form-label">Tanggal Pengambilan</label>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" id="diskon_pembelian" placeholder="Masukan Diskon">
-                                        <span class="input-group-text">%</span>
+                                        <input type="date" class="form-control" id="tanggal_pengambilan">
                                     </div>
-                                </div>
-                                <div class="mb-5">
-                                    <label class="form-label">PPN</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control" id="ppn" placeholder="Masukan PPN">
-                                        <span class="input-group-text">%</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-end">
-                                    <a class="btn btn-secondary" onclick="prosesPembelianBarang()">Proses Pembelian Barang</a>
                                 </div>
                             </div>
                         </div>
@@ -63,7 +42,10 @@
                     <div class="card-title">
                         Daftar Barang
                     </div>
-                    <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahBarang">Tambah Barang</a>
+                    <div>
+                        <a class="btn btn-primary" onclick="modalBarang()">Tambah Barang</a>
+                        <a class="btn btn-secondary" onclick="prosesPembelianBarang()">Proses Barang</a>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -71,15 +53,12 @@
                             <div class="table-responsive">
                                 <table class="table text-nowrap table-bordered">
                                     <thead>
-                                        <tr>
-                                            <th>Nama Barang</th>
-                                            <th>SKU</th>
-                                            <th>QTY</th>
-                                            <th>Harga</th>
-                                            <th>Diskon</th>
-                                            <th>Total Harga</th>
-                                            <th>Pilihan</th>
-                                        </tr>
+                                    <tr>
+                                        <th>Nama Barang</th>
+                                        <th>SKU</th>
+                                        <th>QTY</th>
+                                        <th>Pilihan</th>
+                                    </tr>
                                     </thead>
                                     <tbody id="listBarang"></tbody>
                                 </table>
@@ -113,17 +92,6 @@
                         <label class="form-label">QTY</label>
                         <input type="number" class="form-control" id="qty" placeholder="Masukan QTY">
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Harga</label>
-                        <input type="number" class="form-control" id="harga" placeholder="Masukan Harga">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Diskon</label>
-                        <div class="input-group">
-                            <input type="number" class="form-control" id="diskon" placeholder="Masukan Diskon">
-                            <span class="input-group-text">%</span>
-                        </div>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -141,13 +109,29 @@
             dropdownParent: $('#tambahBarang'),
         });
 
-        $('#supplier').select2();
+        $('#sales').select2();
+
+        function modalBarang() {
+            let sales = document.getElementById('sales').value;
+            if (sales === "0") {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Silahkan pilih sales terlebih dahulu',
+                });
+            } else {
+                if (sales === "1") {
+                    localStorage.setItem('typeSales', 'umum');
+                } else {
+                    localStorage.setItem('typeSales', 'sales');
+                }
+                $("#tambahBarang").modal("show");
+            }
+        }
 
         function tambahBarang() {
             let barang = document.getElementById('barang').value;
             let qty = document.getElementById('qty').value;
-            let harga = document.getElementById('harga').value;
-            let diskon = document.getElementById('diskon').value;
 
             let check = 0;
             if (barang === "") {
@@ -168,27 +152,6 @@
                 });
             }
 
-            if (harga === "") {
-                check = check + 1;
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Harga tidak boleh kosong!',
-                });
-            }
-
-            if (diskon === "") {
-                check = check + 1;
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Diskon tidak boleh kosong!',
-                });
-            }
-
-            let total = parseInt(qty) * parseInt(harga);
-            let nominal = total * (diskon / 100);
-
             if (check === 0) {
                 $.ajax({
                     url: "{{ route('findBarang') }}",
@@ -197,21 +160,16 @@
                         barang_id: barang
                     },
                     success: function (params) {
-                        let dataBarang = JSON.parse(localStorage.getItem('barang')) ?? [];
+                        let dataBarang = JSON.parse(localStorage.getItem('barangTransaksiKhususAmbil')) ?? [];
                         dataBarang.push({
                             'id'        : params.id,
                             'nama'      : params.nama_barang,
                             'sku'       : params.sku,
                             'qty'       : qty,
-                            'harga'     : harga,
-                            'diskon'    : diskon,
-                            'total'     : total - nominal
                         });
-                        localStorage.setItem('barang', JSON.stringify(dataBarang));
+                        localStorage.setItem('barangTransaksiKhususAmbil', JSON.stringify(dataBarang));
                         viewListBarang();
                         document.getElementById('qty').value = "";
-                        document.getElementById('harga').value = "";
-                        document.getElementById('diskon').value = "";
                         $("#tambahBarang").modal("hide");
                     }
                 });
@@ -219,7 +177,7 @@
         }
 
         function viewListBarang() {
-            let barang = JSON.parse(localStorage.getItem('barang')) ?? [];
+            let barang = JSON.parse(localStorage.getItem('barangTransaksiKhususAmbil')) ?? [];
 
             let html = '';
             const rupiah = (number)=>{
@@ -234,9 +192,6 @@
                         <td>${params.nama}</td>
                         <td>${params.sku}</td>
                         <td>${params.qty}</td>
-                        <td>${rupiah(params.harga)}</td>
-                        <td>${params.diskon}%</td>
-                        <td>${rupiah(params.total)}</td>
                         <td>
                             <a class="btn btn-danger btn-sm" onclick="hapusBarang('${params.sku}')">Hapus</a>
                         </td>
@@ -247,7 +202,7 @@
         }
 
         function hapusBarang(sku) {
-            let barang = JSON.parse(localStorage.getItem('barang')) ?? [];
+            let barang = JSON.parse(localStorage.getItem('barangTransaksiKhususAmbil')) ?? [];
 
             let dataBarang = [];
             barang.forEach(function (params) {
@@ -257,13 +212,10 @@
                         'nama'      : params.nama,
                         'sku'       : params.sku,
                         'qty'       : params.qty,
-                        'harga'     : params.harga,
-                        'diskon'    : params.diskon,
-                        'total'     : params.total
                     });
                 }
             });
-            localStorage.setItem('barang', JSON.stringify(dataBarang));
+            localStorage.setItem('barangTransaksiKhususAmbil', JSON.stringify(dataBarang));
             viewListBarang();
         }
 
@@ -278,7 +230,7 @@
 
             swalWithBootstrapButtons.fire({
                 title: 'Apakah kamu yakin?',
-                text: "Ingin memproses pembelian barang",
+                text: "Ingin memproses Pengambilan Barang",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Ya, Lanjutkan Proses',
@@ -293,7 +245,7 @@
                 ) {
                     swalWithBootstrapButtons.fire(
                         'Batal',
-                        'Pembelian tidak diproses',
+                        'Ambil Barang tidak diproses',
                         'error'
                     )
                 }
@@ -301,38 +253,28 @@
         }
 
         function proses() {
-            let supplier = document.getElementById('supplier').value;
-            let tanggal_datang = document.getElementById('tanggal_datang').value;
-            let invoice = document.getElementById('invoice').value;
-            let diskon_pembelian = document.getElementById('diskon_pembelian').value;
-            let ppn = document.getElementById('ppn').value;
-            let barang = JSON.parse(localStorage.getItem('barang'));
+            let sales = document.getElementById('sales').value;
+            let tanggal_pengambilan = document.getElementById('tanggal_pengambilan').value;
+            let barang = JSON.parse(localStorage.getItem('barangTransaksiKhususAmbil'));
+
+            console.log(tanggal_pengambilan);
 
             let check = 0;
-            if (supplier === "0") {
+            if (sales === "") {
                 check = check  + 1;
                 Swal.fire({
                     icon: 'error',
                     title: 'Gagal',
-                    text: 'Supplier tidak boleh kosong!',
+                    text: 'Sales tidak boleh kosong!',
                 });
             }
 
-            if (tanggal_datang === "") {
+            if (tanggal_pengambilan === "") {
                 check = check  + 1;
                 Swal.fire({
                     icon: 'error',
                     title: 'Gagal',
-                    text: 'Tanggal Datang tidak boleh kosong!',
-                });
-            }
-
-            if (invoice === "") {
-                check = check  + 1;
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal',
-                    text: 'Invoice tidak boleh kosong!',
+                    text: 'Tanggal Pengambilan tidak boleh kosong!',
                 });
             }
 
@@ -347,24 +289,21 @@
 
             if (check === 0) {
                 $.ajax({
-                    url: "{{ route('tambah_pembelian_barang_post') }}",
+                    url: "{{ route('pengambilan_barang_post') }}",
                     method: "POST",
                     data: {
-                        supplier: supplier,
-                        tanggal_datang: tanggal_datang,
-                        invoice: invoice,
-                        diskon_pembelian: diskon_pembelian,
-                        ppn: ppn,
+                        sales: sales,
+                        tanggal_pengambilan: tanggal_pengambilan,
                         barang: barang,
                         _token: '{{csrf_token()}}'
                     },
                     success: function (params) {
                         if (params.status) {
-                            localStorage.setItem('barang', JSON.stringify([]));
+                            localStorage.setItem('barangTransaksiKhususAmbil', JSON.stringify([]));
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil',
-                                text: 'Pembelian Barang Berhasil diProses!',
+                                text: 'Pengambilan Barang Berhasil diProses!',
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     location.reload();
@@ -374,7 +313,7 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Gagal',
-                                text: 'Pembelian Barang Gagal diProses!',
+                                text: 'Pengambilan Barang Gagal diProses!',
                             });
                         }
                     }

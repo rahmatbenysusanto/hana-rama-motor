@@ -317,6 +317,28 @@
                             <span class="ms-3 side-menu__label">Return Sampel</span>
                         </a>
                     </li>
+                    <li class="slide has-sub {{ $title == "ambil barang" ? "open" : "" }} {{ $title == "sisa barang" ? "open" : "" }}">
+                        <a href="javascript:void(0);" class="side-menu__item">
+                            <div  style="width: 20px;">
+                                <i class="fa-regular fa-tag fa-lg"></i>
+                            </div>
+                            <span class="ms-3 side-menu__label">Transaksi Khusus</span>
+                            <div style="width: 20px">
+                                <i class="ms-3 fa-solid fa-chevron-right fa-sm"></i>
+                            </div>
+                        </a>
+                        <ul class="slide-menu child1">
+                            <li class="slide {{ $title == "ambil barang" ? "active" : "" }}">
+                                <a href="{{ route('pengambilan_barang') }}" class="side-menu__item {{ $title == "ambil barang" ? "active" : "" }}">Ambil Barang</a>
+                            </li>
+                            <li class="slide {{ $title == "sisa barang" ? "active" : "" }}">
+                                <a href="{{ route('sisa_barang') }}" class="side-menu__item {{ $title == "sisa barang" ? "active" : "" }}">Daftar Pengambilan</a>
+                            </li>
+                            <li class="slide">
+                                <a href="#" class="side-menu__item">Transaksi Khusus Alif</a>
+                            </li>
+                        </ul>
+                    </li>
 
                     <li class="slide__category"><span class="category-name">Laporan</span></li>
                     <li class="slide has-sub">

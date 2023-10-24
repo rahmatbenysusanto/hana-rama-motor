@@ -33,7 +33,7 @@
     </table>
     <table class="mt-5">
         <thead>
-            <tr style="border-top: 1px solid black;border-bottom: 1px solid black;">
+            <tr style="border: 1px solid black;">
                 <th style="width: 25px" class="text-center">#</th>
                 <th style="width: 300px">Nama Barang</th>
                 <th style="width: 100px">SKU</th>
@@ -47,12 +47,12 @@
                 $total_stok = 0;
             @endphp
             @foreach($barang as $b)
-                <tr style="border-bottom: 1px solid rgb(0,0,0, 0.5)">
-                    <td class="text-center">{{ $loop->iteration }}</td>
-                    <td>{{ $b->nama_barang }}</td>
-                    <td>{{ $b->sku }}</td>
-                    <td class="text-center">{{ $b->inventory->stok }}</td>
-                    <td>@currency($b->harga_umum)</td>
+                <tr style="border: 1px solid rgb(0,0,0, 0.5); ">
+                    <td class="text-center" style="border-right: 1px solid rgb(0,0,0, 0.5)">{{ $loop->iteration }}</td>
+                    <td style="border-right: 1px solid rgb(0,0,0, 0.5)">{{ $b->nama_barang }}</td>
+                    <td style="border-right: 1px solid rgb(0,0,0, 0.5)">{{ $b->sku }}</td>
+                    <td class="text-center" style="border-right: 1px solid rgb(0,0,0, 0.5)">{{ $b->inventory->stok }}</td>
+                    <td style="border-right: 1px solid rgb(0,0,0, 0.5)">@currency($b->harga_umum)</td>
                     <td>@currency($b->harga_sales)</td>
                 </tr>
                 @php
