@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\BarangRusak;
+use App\Models\Kategori;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class BarangController extends Controller
@@ -77,5 +79,39 @@ class BarangController extends Controller
 
         $pdf = Pdf::loadView('pdf.list_barang', ['barang' => $barang, 'title' => $title]);
         return $pdf->stream('list-barang-'.$kategori.'.pdf');
+    }
+
+    public function detail_barang($id)
+    {
+        $dataBarang = Barang::with('kategori', 'inventory')->where('id', $id)->first();
+
+        $barang = $dataBarang ?? [];
+
+        $title = $dataBarang->kategori->nama;
+        return view('barang.detail', compact('title', 'barang'));
+    }
+
+    public function edit_barang($id)
+    {
+        $kategori = Kategori::all();
+        $dataBarang = Barang::with('kategori', 'inventory')->where('id', $id)->first();
+
+        $barang = $dataBarang ?? [];
+
+        $title = $dataBarang->kategori->nama;
+        return view('barang.edit', compact('title', 'barang', 'kategori'));
+    }
+
+    public function edit_barang_post(Request $request)
+    {
+        Barang::where('id', $request->post('barang_id'))->update([
+            'nama_barang'   => $request->post('nama_barang'),
+            'kategori_id'   => $request->post('kategori'),
+            'harga_umum'    => $request->post('harga_umum'),
+            'harga_sales'   => $request->post('harga_sales')
+        ]);
+
+        Session::flash('success', 'Edit Barang Berhasil');
+        return back();
     }
 }

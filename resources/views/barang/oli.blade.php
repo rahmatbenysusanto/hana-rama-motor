@@ -44,9 +44,9 @@
                                                 Pilih
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Lihat Detail</a></li>
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Edit Barang</a></li>
-                                                <li><a class="dropdown-item" href="javascript:void(0);">Hapus Barang</a></li>
+                                                <li><a class="dropdown-item" href="/detail-barang/{{ $b->id }}">Lihat Detail</a></li>
+                                                <li><a class="dropdown-item" href="/edit-barang/{{ $b->id }}">Edit Barang</a></li>
+                                                <li><a class="dropdown-item" href="/hapus-barang/{{ $b->id }}">Hapus Barang</a></li>
                                             </ul>
                                         </div>
                                     </td>

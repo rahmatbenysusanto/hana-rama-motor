@@ -32,6 +32,9 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::get('/barang', 'find')->name('findBarang');
         Route::get('/find-barang-rusak', 'findBarangRusak')->name('findBarangRusak');
         Route::get('/download-list-barang/{kategori}', 'download_list_barang');
+        Route::get('/detail-barang/{id}', 'detail_barang');
+        Route::get('/edit-barang/{id}', 'edit_barang');
+        Route::post('/edit-barang', 'edit_barang_post')->name('edit_barang_post');
     });
 
     Route::controller(\App\Http\Controllers\InboundController::class)->group(function () {
