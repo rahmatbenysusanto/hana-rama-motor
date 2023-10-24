@@ -7,9 +7,12 @@
     <div class="row">
         <div class="col-xl-12">
             <div class="card custom-card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between">
                     <div class="card-title">
                         List Daftar Oli
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <a href="/download-list-barang/oli" target="_blank" class="btn btn-primary btn-sm">Download List Barang</a>
                     </div>
                 </div>
                 <div class="card-body">

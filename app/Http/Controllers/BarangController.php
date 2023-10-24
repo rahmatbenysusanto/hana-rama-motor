@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\BarangRusak;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -57,5 +58,24 @@ class BarangController extends Controller
 
         $title = "barang rusak";
         return view('barang.rusak', compact('title', 'barangRusak'));
+    }
+
+    public function download_list_barang($kategori)
+    {
+        if ($kategori == "oli") {
+            $dataBarang = Barang::with('inventory')->where('kategori_id', 1)->get();
+            $title = "OLI";
+        } elseif ($kategori == "ban") {
+            $dataBarang = Barang::with('inventory')->where('kategori_id', 2)->get();
+            $title = "BAN";
+        } else {
+            $dataBarang = Barang::with('inventory')->where('kategori_id', 3)->get();
+            $title = "SPAREPART";
+        }
+
+        $barang = $dataBarang ?? [];
+
+        $pdf = Pdf::loadView('pdf.list_barang', ['barang' => $barang, 'title' => $title]);
+        return $pdf->stream('list-barang-'.$kategori.'.pdf');
     }
 }
