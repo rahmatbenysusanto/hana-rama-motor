@@ -18,15 +18,16 @@
                         <div class="col-6">
                             <div class="mb-3">
                                 <label for="nama_barang" class="form-label">Nama Barang</label>
-                                <input type="text" class="form-control" id="nama_barang" name="nama_barang">
+                                <input type="text" class="form-control" id="nama_barang" name="nama_barang" required>
                             </div>
                             <div class="mb-3">
                                 <label for="sku" class="form-label">SKU / Barcode</label>
-                                <input type="text" class="form-control" id="sku" name="sku">
+                                <input type="text" class="form-control" id="sku" name="sku" required>
+                                <a onclick="generateSKU()" class="btn btn-secondary btn-sm mt-2">Generate SKU</a>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Kategori Barang</label>
-                                <select class="form-select" aria-label="Pilih Kategori Barang" name="kategori">
+                                <select class="form-select" aria-label="Pilih Kategori Barang" name="kategori" required>
                                     <option selected>Kategori Barang</option>
                                     @foreach($kategori as $k)
                                         <option value="{{ $k->id }}">{{ $k->nama }}</option>
@@ -37,14 +38,14 @@
                                 <label class="form-label">Harga Umum</label>
                                 <div class="input-group">
                                     <span class="input-group-text" id="basic-addon1">Rp. </span>
-                                    <input type="number" class="form-control" placeholder="Harga Umum" name="harga_umum" aria-describedby="basic-addon1">
+                                    <input type="number" class="form-control" placeholder="Harga Umum" name="harga_umum" aria-describedby="basic-addon1" required>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Harga Sales</label>
                                 <div class="input-group">
                                     <span class="input-group-text" id="basic-addon1">Rp. </span>
-                                    <input type="number" class="form-control" placeholder="Harga Sales" name="harga_sales" aria-describedby="basic-addon1">
+                                    <input type="number" class="form-control" placeholder="Harga Sales" name="harga_sales" aria-describedby="basic-addon1" required>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end">
@@ -56,5 +57,14 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('js')
+    <script>
+        function generateSKU() {
+            const d = new Date();
+            document.getElementById('sku').value = d.getTime();
+        }
+    </script>
 @endsection
 
