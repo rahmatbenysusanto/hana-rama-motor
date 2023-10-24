@@ -137,7 +137,7 @@
 
 @section('js')
     <script>
-        $('#cari_barang').select2({
+        $('#barang').select2({
             dropdownParent: $('#tambahBarang'),
         });
 

@@ -166,13 +166,30 @@
 
                 <ul class="main-menu">
                     <li class="slide__category"><span class="category-name">Main</span></li>
-                    <li class="slide">
-                        <a href="{{ route('dashboard') }}" class="side-menu__item {{ $title == "dashboard" ? "active" : "" }}">
-                            <div style="width: 20px;">
+                    <li class="slide has-sub {{ $title == "dashboard utama" ? "open" : "" }}">
+                        <a href="javascript:void(0);" class="side-menu__item">
+                            <div  style="width: 20px;">
                                 <i class="fa-regular fa-house fa-lg"></i>
                             </div>
                             <span class="ms-3 side-menu__label">Dashboard</span>
+                            <div style="width: 20px">
+                                <i class="ms-3 fa-solid fa-chevron-right fa-sm"></i>
+                            </div>
                         </a>
+                        <ul class="slide-menu child1">
+                            <li class="slide {{ $title == "dashboard utama" ? "active" : "" }}">
+                                <a href="{{ route('dashboard') }}" class="side-menu__item {{ $title == "dashboard utama" ? "active" : "" }}">Dashboard Utama</a>
+                            </li>
+                            <li class="slide">
+                                <a href="#" class="side-menu__item">Dashboard Oli</a>
+                            </li>
+                            <li class="slide">
+                                <a href="#" class="side-menu__item">Dashboard Ban</a>
+                            </li>
+                            <li class="slide">
+                                <a href="#" class="side-menu__item">Dashboard Sparepart</a>
+                            </li>
+                        </ul>
                     </li>
 
                     <li class="slide__category"><span class="category-name">Barang</span></li>
