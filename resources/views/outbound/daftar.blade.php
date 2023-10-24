@@ -63,7 +63,7 @@
                                                 <ul class="dropdown-menu">
                                                     <li><a class="dropdown-item" href="/detail-transaksi/{{ $tra->id }}">Lihat Detail</a></li>
                                                     <li><a class="dropdown-item" href="/edit-transaksi/{{ $tra->id }}">Edit</a></li>
-                                                    <li><a class="dropdown-item" href="/cetak-nota-transaksi/{{ $tra->id }}">Cetak Nota</a></li>
+                                                    <li><a class="dropdown-item" target="_blank" href="/cetak-nota-transaksi/{{ $tra->id }}">Cetak Nota</a></li>
                                                 </ul>
                                             </div>
                                         </td>

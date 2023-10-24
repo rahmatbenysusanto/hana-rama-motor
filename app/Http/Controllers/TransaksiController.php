@@ -172,6 +172,8 @@ class TransaksiController extends Controller
 
     public function cetak_nota_transaksi($id)
     {
+        $dataTransaksi = Transaksi::with('sales', 'pelanggan', 'pembayaran')->where('id', $id)->first();
+
         $customPaper = [0, 0, 684, 792];
         $pdf = Pdf::loadView('pdf.invoice', []);
         $pdf->setPaper($customPaper, 'landscape');
