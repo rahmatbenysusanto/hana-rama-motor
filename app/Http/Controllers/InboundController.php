@@ -10,6 +10,7 @@ use App\Models\Inventory;
 use App\Models\InventoryDetail;
 use App\Models\Kategori;
 use App\Models\Supplier;
+use App\services\TrackingStokService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -18,6 +19,12 @@ use Illuminate\View\View;
 
 class InboundController extends Controller
 {
+    protected $trackingStok;
+    public function __construct(TrackingStokService $trackingStok)
+    {
+        $this->trackingStok = $trackingStok;
+    }
+
     public function tambah_barang_baru(): View
     {
         $kategori = Kategori::all();

@@ -317,7 +317,7 @@
                             <span class="ms-3 side-menu__label">Return Sampel</span>
                         </a>
                     </li>
-                    <li class="slide has-sub {{ $title == "ambil barang" ? "open" : "" }} {{ $title == "sisa barang" ? "open" : "" }}">
+                    <li class="slide has-sub {{ $title == "ambil barang" ? "open" : "" }} {{ $title == "sisa barang" ? "open" : "" }} {{ $title == "buat transaksi alif" ? "open" : "" }}">
                         <a href="javascript:void(0);" class="side-menu__item">
                             <div  style="width: 20px;">
                                 <i class="fa-regular fa-tag fa-lg"></i>
@@ -334,8 +334,8 @@
                             <li class="slide {{ $title == "sisa barang" ? "active" : "" }}">
                                 <a href="{{ route('sisa_barang') }}" class="side-menu__item {{ $title == "sisa barang" ? "active" : "" }}">Daftar Pengambilan</a>
                             </li>
-                            <li class="slide">
-                                <a href="#" class="side-menu__item">Transaksi Khusus Alif</a>
+                            <li class="slide {{ $title == "buat transaksi alif" ? "active" : "" }}">
+                                <a href="{{ route('transaksi_khusus_alif') }}" class="side-menu__item {{ $title == "buat transaksi alif" ? "active" : "" }}">Transaksi Khusus Alif</a>
                             </li>
                         </ul>
                     </li>

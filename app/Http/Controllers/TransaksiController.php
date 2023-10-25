@@ -581,4 +581,20 @@ class TransaksiController extends Controller
             'status'    => true
         ]);
     }
+
+    public function transaksi_khusus_alif()
+    {
+        $dataPelanggan = Pelanggan::all();
+        $dataSales = Sales::all();
+        $dataBarang = Barang::all();
+        $dataPembayaran = Pembayaran::all();
+
+        $pelanggan = $dataPelanggan ?? [];
+        $sales = $dataSales ?? [];
+        $barang  = $dataBarang ?? [];
+        $pembayaran = $dataPembayaran ?? [];
+
+        $title = "buat transaksi alif";
+        return view('outbound.buat_transaksi_alif', compact('title', 'pelanggan', 'sales', 'barang', 'pembayaran'));
+    }
 }
