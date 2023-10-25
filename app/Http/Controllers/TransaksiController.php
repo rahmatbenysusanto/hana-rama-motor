@@ -165,7 +165,7 @@ class TransaksiController extends Controller
 
     public function daftar_transaksi(): View
     {
-        $dataTransaksi = Transaksi::with('sales', 'pelanggan', 'pembayaran')->get();
+        $dataTransaksi = Transaksi::with('sales', 'pelanggan', 'pembayaran')->orderBy('tanggal_penjualan', 'ASC')->get();
 
         $transaksi = $dataTransaksi ?? [];
 

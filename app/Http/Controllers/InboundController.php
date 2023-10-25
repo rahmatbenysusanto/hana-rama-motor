@@ -178,7 +178,7 @@ class InboundController extends Controller
 
     public function daftar_pembelian(): View
     {
-        $result = Inbound::with('supplier')->where('type', 'pembelian')->get();
+        $result = Inbound::with('supplier')->where('type', 'pembelian')->orderBy('tanggal_datang', 'ASC')->get();
 
         $inbound = $result ?? [];
 
