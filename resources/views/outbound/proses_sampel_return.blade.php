@@ -71,6 +71,7 @@
                                 </thead>
                                 <tbody>
                                 @foreach($sampelDetail as $detail)
+                                    <input type="hidden" name="sampel_id" value="{{ $sampel->id }}">
                                     <input type="hidden" name="sampel_detail_id[]" value="{{ $detail->id }}">
                                     <tr>
                                         <td>{{ $detail->barang->nama_barang }}</td>

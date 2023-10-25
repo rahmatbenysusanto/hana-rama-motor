@@ -230,6 +230,7 @@ class TransaksiController extends Controller
                 $total_harga = 0;
                 $dataBarang = $request->post('barang');
                 foreach ($dataBarang as $barang) {
+                    $from = Inventory::where('barang_id', $barang['id'])->first();
                     $inventory = Inventory::where('barang_id', $barang['id'])->first();
                     $inventory_detail = InventoryDetail::where('inventory_id', $inventory->id)->where('qty', '!=', 0)->get();
 
@@ -282,6 +283,10 @@ class TransaksiController extends Controller
                         }
                     }
                     Inventory::where('barang_id', $barang['id'])->decrement('stok', $barang['qty']);
+
+                    // Tracking Stok
+                    $to = Inventory::where('barang_id', $barang['id'])->first();
+                    $this->trackingStok->trackingStokSampel($inventory->id, $sampel->id, null, $barang['qty'], $from->stok, $to->stok, 'decrement', 'Sampel Barang');
                 }
 
                 Sampel::where('id', $sampel->id)->update([
@@ -385,11 +390,15 @@ class TransaksiController extends Controller
                             'status'    => 2
                         ]);
                     } elseif ($status[$a] == 3) {
+                        $from = Inventory::where('barang_id', $sampleDetail->barang_id)->first();
                         Inventory::where('barang_id', $sampleDetail->barang_id)->increment('stok', $sampleDetail->qty);
                         InventoryDetail::where('id', $sampleDetail->inventory_detail_id)->increment('qty', $sampleDetail->qty);
                         SampelDetail::where('id', $sampleDetail->id)->update([
                             'status'    => 3
                         ]);
+                        // Tracking Stok
+                        $to = Inventory::where('barang_id', $sampleDetail->barang_id)->first();
+                        $this->trackingStok->trackingStokSampel($from->id, $request->post('sampel_id'), null, $sampleDetail->qty, $from->stok, $to->stok, 'increment', 'Sampel Barang');
                     }
                 }
             DB::commit();
@@ -467,6 +476,7 @@ class TransaksiController extends Controller
                         } elseif ($status[$a] == 3) {
                             // Barang Kembali
                             $transaksiDetail = TransaksiDetail::where('id', $transaksiDetailId[$a])->first();
+                            $from = Inventory::where('barang_id', $transaksiDetail->barang_id)->first();
                             $hargaSatuan = $transaksiDetail->total_harga / $transaksiDetail->qty;
                             $harga = $hargaSatuan * $jumlah[$a];
                             Transaksi::where('id', $transaksiDetail->transaksi_id)->decrement('total_harga', $harga);
@@ -481,6 +491,11 @@ class TransaksiController extends Controller
 
                             Inventory::where('barang_id', $transaksiDetail->barang_id)->increment('stok', $jumlah[$a]);
                             InventoryDetail::where('id', $transaksiDetail->inventory_detail_id)->increment('qty', $jumlah[$a]);
+
+                            // Tracking Stok
+                            $to = Inventory::where('barang_id', $transaksiDetail->barang_id)->first();
+                            $inventory = Inventory::where('barang_id', $transaksiDetail->barang_id)->first();
+                            $this->trackingStok->trackingStokTransaksi($inventory->id, $transaksiDetail->transaksi_id, null, $transaksiDetail->barang_id, $from->stok, $to->stok, 'increment', 'Return Penjualan');
                         }
                     }
                 }
