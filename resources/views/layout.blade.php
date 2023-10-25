@@ -256,7 +256,7 @@
                             <div style="width: 20px;">
                                 <i class="fa-solid fa-arrow-rotate-left fa-lg"></i>
                             </div>
-                            <span class="ms-3 side-menu__label">Pembalian Return</span>
+                            <span class="ms-3 side-menu__label">Pembelian Return</span>
                         </a>
                     </li>
                     <li class="slide">
@@ -264,7 +264,7 @@
                             <div style="width: 20px;">
                                 <i class="fa-light fa-square-list fa-lg"></i>
                             </div>
-                            <span class="ms-3 side-menu__label">List Pembalian Return</span>
+                            <span class="ms-3 side-menu__label">List Pembelian Return</span>
                         </a>
                     </li>
 
