@@ -198,7 +198,7 @@
             </tr>
             <tr>
                 <th style="width: 50px" class="text-center"></th>
-                <th style="width: 320px" class="text-center">(  Indonesia Motor  )</th>
+                <th style="width: 320px" class="text-center">( {{ $transaksi->pelanggan->nama }}  )</th>
                 <th style="width: 100px" class="text-center"></th>
                 <th style="width: 100px" class="text-center"></th>
                 <th style="width: 50px" class="text-center"></th>
