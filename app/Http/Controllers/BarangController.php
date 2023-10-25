@@ -15,7 +15,7 @@ class BarangController extends Controller
 {
     public function oli(): View
     {
-        $data = Barang::with('inventory')->where('kategori_id', 1)->get();
+        $data = Barang::with('inventory')->where('kategori_id', 1)->orderBy('nama_barang', 'ASC')->get();
 
         $barang = $data ?? [];
 
@@ -25,7 +25,7 @@ class BarangController extends Controller
 
     public function ban(): View
     {
-        $data = Barang::with('inventory')->where('kategori_id', 2)->get();
+        $data = Barang::with('inventory')->where('kategori_id', 2)->orderBy('nama_barang', 'ASC')->get();
 
         $barang = $data ?? [];
 
@@ -35,7 +35,7 @@ class BarangController extends Controller
 
     public function sparepart(): View
     {
-        $data = Barang::with('inventory')->where('kategori_id', 3)->get();
+        $data = Barang::with('inventory')->where('kategori_id', 3)->orderBy('nama_barang', 'ASC')->get();
 
         $barang = $data ?? [];
 
