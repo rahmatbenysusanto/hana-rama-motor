@@ -107,6 +107,7 @@ class InboundController extends Controller
                 $ppn = $request->post('ppn');
                 $diskon_pembalian = $request->post('diskon_pembelian');
                 foreach ($barang as $b) {
+                    $from = Inventory::where('barang_id', $b['id'])->first();
                     $harga = $b['total'];
 
                     if ($diskon_pembalian != 0) {
@@ -123,7 +124,7 @@ class InboundController extends Controller
 
                     $totalQty += $b['qty'];
                     $qtyBarang++;
-                    InboundDetail::create([
+                    $inbound_detail = InboundDetail::create([
                         'inbound_id'    => $inbound->id,
                         'barang_id'     => $b['id'],
                         'qty'           => $b['qty'],
@@ -149,6 +150,10 @@ class InboundController extends Controller
                             'qty'           => $b['qty']
                         ]);
                     }
+
+                    // Tracking Stok
+                    $to = Inventory::where('barang_id', $b['id'])->first();
+                    $this->trackingStok->trackingStokInbound($inventory->id, $inbound->id, $inbound_detail->id, $b['qty'], $from->stok, $to->stok, 'increment', 'Pembelian Barang');
                 }
 
                 Inbound::where('id', $inbound->id)->update([

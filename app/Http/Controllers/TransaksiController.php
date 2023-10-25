@@ -18,6 +18,7 @@ use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
 use App\Models\TransaksiKhusus;
 use App\Models\TransaksiKhususDetail;
+use App\services\TrackingStokService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,12 @@ use Illuminate\View\View;
 
 class TransaksiController extends Controller
 {
+    protected $trackingStok;
+    public function __construct(TrackingStokService $trackingStok)
+    {
+        $this->trackingStok = $trackingStok;
+    }
+
     public function buat_transaksi(): View
     {
         $dataPelanggan = Pelanggan::all();
@@ -71,6 +78,7 @@ class TransaksiController extends Controller
                 $diskon_penjualan = $request->post('diskon_penjualan');
                 $barangs = $request->post('barang');
                 foreach ($barangs as $barang) {
+                    $from = Inventory::where('barang_id', $barang['id'])->first();
                     $inventory = Inventory::where('barang_id', $barang['id'])->first();
                     $inventory_detail = InventoryDetail::where('inventory_id', $inventory->id)->where('qty', '!=', 0)->get();
 
@@ -102,6 +110,10 @@ class TransaksiController extends Controller
 
                     $jumlah_barang++;
                     $qty_barang += $barang['qty'];
+
+                    // Tracking Stok
+                    $to = Inventory::where('barang_id', $barang['id'])->first();
+                    $this->trackingStok->trackingStokTransaksi($inventory->id, $transaksi->id, null, $barang['qty'], $from->stok, $to->stok, 'decrement', 'Penjualan Barang');
                 }
 
                 $totalDiskon = $harga * ($diskon_penjualan / 100);
