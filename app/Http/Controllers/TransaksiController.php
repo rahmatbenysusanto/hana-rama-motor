@@ -570,4 +570,15 @@ class TransaksiController extends Controller
         Session::flash('success', 'Proses Pengembalian Barang Berhasil');
         return back();
     }
+
+    public function proses_pembayaran(Request $request)
+    {
+        Transaksi::where('id', $request->post('id'))->update([
+            'status_pembayaran'     => 'Lunas'
+        ]);
+
+        return response([
+            'status'    => true
+        ]);
+    }
 }

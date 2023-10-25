@@ -49,6 +49,10 @@
                                             @else
                                                 <span class="badge bg-danger-transparent">Return</span>
                                             @endif
+
+                                            @if($tra->tanggal_tempo != null)
+                                                    <span class="badge bg-danger-transparent">Tempo</span>
+                                            @endif
                                         </td>
                                         <td>
                                             @if($tra->status_pembayaran == "Lunas")
@@ -71,6 +75,9 @@
                                                 <ul class="dropdown-menu">
                                                     <li><a class="dropdown-item" href="/detail-transaksi/{{ $tra->id }}">Lihat Detail</a></li>
                                                     <li><a class="dropdown-item" href="/edit-transaksi/{{ $tra->id }}">Edit</a></li>
+                                                    @if($tra->status_pembayaran == "Belum DiBayar")
+                                                        <li><a class="dropdown-item" onclick="bayarTransaksi('{{ $tra->id }}')">Bayar Transaksi</a></li>
+                                                    @endif
                                                     <li><a class="dropdown-item" target="_blank" href="/cetak-nota-transaksi/{{ $tra->id }}">Cetak Nota</a></li>
                                                 </ul>
                                             </div>
@@ -85,4 +92,58 @@
         </div>
     </div>
 
+@endsection
+
+@section('js')
+    <script>
+        function bayarTransaksi(id) {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success ms-2',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+            })
+
+            swalWithBootstrapButtons.fire({
+                title: 'Apakah kamu yakin?',
+                text: "Ingin Konfirmasi Pembayaran Transaksi?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Lanjutkan Proses',
+                cancelButtonText: 'Tidak, Batalkan',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{{ route('proses_pembayaran') }}',
+                        method: 'POST',
+                        data: {
+                            id: id,
+                            _token: '{{csrf_token()}}'
+                        },
+                        success: function (params) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Pembayaran transaksi berhasil',
+                            }).then((res) => {
+                                if (res.isConfirmed) {
+                                    location.reload();
+                                }
+                            });
+                        }
+                    });
+                } else if (
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                        'Batal',
+                        'Pembayaran tidak diproses',
+                        'error'
+                    )
+                }
+            });
+        }
+    </script>
 @endsection

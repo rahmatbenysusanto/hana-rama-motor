@@ -103,6 +103,8 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::get('/transaksi-khusus-sisa-barang', 'sisa_barang')->name('sisa_barang');
         Route::get('/proses-pengembalian-barang/{id}', 'proses_pengembalian_barang')->name('proses_pengembalian_barang');
         Route::post('/proses-pengembalian-barang', 'proses_pengembalian_barang_post')->name('proses_pengembalian_barang_post');
+
+        Route::post('/proses-pembayaran', 'proses_pembayaran')->name('proses_pembayaran');
     });
 });
 
