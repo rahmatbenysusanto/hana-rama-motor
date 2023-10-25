@@ -103,7 +103,7 @@
 
 @section('js')
     <script>
-        $('#cari_barang').select2({
+        $('#barang').select2({
             dropdownParent: $('#tambahBarang'),
         });
 
@@ -150,6 +150,7 @@
                         });
                         localStorage.setItem('barangPembelianReturn', JSON.stringify(dataBarang));
                         viewListBarang();
+                        document.getElementById('qty').value = "";
                         $("#tambahBarang").modal("hide");
                     }
                 });

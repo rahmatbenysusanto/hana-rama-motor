@@ -274,4 +274,16 @@ class InboundController extends Controller
         $title = 'list return pembelian';
         return view('inbound.detail_return', compact('title', 'inbound'));
     }
+
+    public function edit_pembelian($id)
+    {
+        $result = Inbound::with('supplier', 'inboundDetail', 'inboundDetail.barang')
+            ->where('id', $id)
+            ->first();
+
+        $inbound = $result ?? [];
+
+        $title = 'daftar pembelian';
+        return view('inbound.edit', compact('title', 'inbound'));
+    }
 }

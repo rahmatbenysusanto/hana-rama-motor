@@ -35,6 +35,7 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::get('/detail-barang/{id}', 'detail_barang');
         Route::get('/edit-barang/{id}', 'edit_barang');
         Route::post('/edit-barang', 'edit_barang_post')->name('edit_barang_post');
+        Route::get('/hapus-barang/{id}', 'hapus_barang');
     });
 
     Route::controller(\App\Http\Controllers\InboundController::class)->group(function () {
@@ -48,6 +49,8 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::post('/tambah-pembelian-return', 'return_pembelian_post')->name('return_pembelian_post');
         Route::get('/list-return-pembelian', 'list_return_pembelian')->name('list_return_pembelian');
         Route::get('/detail-return-pembelian/{id}', 'detail_return_pembelian');
+
+        Route::get('/edit-pembelian/{id}', 'edit_pembelian');
     });
 
     Route::controller(\App\Http\Controllers\SupplierController::class)->group(function () {

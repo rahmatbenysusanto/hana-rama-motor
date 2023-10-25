@@ -174,6 +174,7 @@
                         });
                         localStorage.setItem('barangSampel', JSON.stringify(dataBarang));
                         viewListBarang();
+                        document.getElementById('qty').value = "";
                         $("#tambahBarang").modal("hide");
                     }
                 });

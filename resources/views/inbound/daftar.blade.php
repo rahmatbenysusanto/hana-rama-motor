@@ -58,6 +58,7 @@
                                                 </button>
                                                 <ul class="dropdown-menu">
                                                     <li><a class="dropdown-item" href="/detail-pembelian/{{ $in->id }}">Lihat Detail</a></li>
+                                                    <li><a class="dropdown-item" href="/edit-pembelian/{{ $in->id }}">Edit</a></li>
                                                 </ul>
                                             </div>
                                         </td>

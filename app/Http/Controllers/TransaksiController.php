@@ -59,6 +59,7 @@ class TransaksiController extends Controller
                     'status'            => 'penjualan',
                     'tanggal_penjualan' => $request->post('tanggal_penjualan'),
                     'tanggal_tempo'     => $request->post('tempo'),
+                    'status_pembayaran' => $request->post('statusPembayaran'),
                     'jumlah_barang'     => 0,
                     'qty'               => 0
                 ]);

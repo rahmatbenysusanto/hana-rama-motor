@@ -39,6 +39,14 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Status Pembayaran</label>
+                                    <select class="form-control" id="statusPembayaran">
+                                        <option value="0">Pilih Status Pembayaran</option>
+                                        <option value="Lunas">Lunas</option>
+                                        <option value="Belum DiBayar">Belum DiBayar</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-6">
                                 <div class="mb-3">
@@ -156,6 +164,7 @@
         $('#sales').select2();
         $('#pelanggan').select2();
         $('#pembayaran').select2();
+        $('#statusPembayaran').select2();
 
         function modalBarang() {
             let sales = document.getElementById('sales').value;
@@ -249,6 +258,8 @@
                         }
                         localStorage.setItem('barangTransaksi', JSON.stringify(dataBarang));
                         viewListBarang();
+                        document.getElementById('qty').value = "";
+                        document.getElementById('diskon').value = "";
                         $("#tambahBarang").modal("hide");
                     }
                 });
@@ -345,6 +356,7 @@
             let diskon_penjualan = document.getElementById('diskon_penjualan').value;
             let tempo = document.getElementById('tempo').value;
             let tanggal_penjualan = document.getElementById('tanggal_penjualan').value;
+            let statusPembayaran = document.getElementById('statusPembayaran').value;
 
             let barang = JSON.parse(localStorage.getItem('barangTransaksi'));
 
@@ -394,6 +406,15 @@
                 });
             }
 
+            if (statusPembayaran === "0") {
+                check = check  + 1;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Tanggal Penjualan tidak boleh kosong!',
+                });
+            }
+
             if (barang.length === 0) {
                 check = check  + 1;
                 Swal.fire({
@@ -414,6 +435,7 @@
                         diskon_penjualan: diskon_penjualan,
                         tempo: tempo,
                         tanggal_penjualan: tanggal_penjualan,
+                        statusPembayaran: statusPembayaran,
                         barang: barang,
                         _token: '{{csrf_token()}}'
                     },

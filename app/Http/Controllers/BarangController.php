@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\BarangRusak;
+use App\Models\InboundDetail;
 use App\Models\Kategori;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -112,6 +113,18 @@ class BarangController extends Controller
         ]);
 
         Session::flash('success', 'Edit Barang Berhasil');
+        return back();
+    }
+
+    public function hapus_barang($id)
+    {
+        $check = InboundDetail::where('barang_id', $id)->count();
+        if ($check != 0) {
+            Session::flash('error', 'Barang Sudah dilakukan pembelian, tidak dapat dihapus');
+            return back();
+        }
+        Barang::where('id', $id)->delete();
+        Session::flash('success', 'Barang berhasil dihapus');
         return back();
     }
 }

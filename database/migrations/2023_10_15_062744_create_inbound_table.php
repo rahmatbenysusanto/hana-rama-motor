@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('ppn')->nullable();
             $table->integer('total_harga');
             $table->string('type');
+            $table->string('status_pembayaran');
             $table->timestamps();
         });
     }
