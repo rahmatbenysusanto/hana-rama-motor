@@ -103,6 +103,20 @@
         </div>
     </div>
 
+    <div class="modal fade" id="hitungSampel" tabindex="-1" aria-labelledby="exampleModalSmLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalSmLabel">Hitung Sampel</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="listHitungSampel"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('js')
@@ -229,39 +243,6 @@
         }
 
         function prosesPembelianBarang() {
-            const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-success ms-2',
-                    cancelButton: 'btn btn-danger'
-                },
-                buttonsStyling: false
-            })
-
-            swalWithBootstrapButtons.fire({
-                title: 'Apakah kamu yakin?',
-                text: "Ingin memproses Penjualan barang",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Lanjutkan Proses',
-                cancelButtonText: 'Tidak, Batalkan',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Proses Pembalian
-                    proses();
-                } else if (
-                    result.dismiss === Swal.DismissReason.cancel
-                ) {
-                    swalWithBootstrapButtons.fire(
-                        'Batal',
-                        'Penjualan tidak diproses',
-                        'error'
-                    )
-                }
-            });
-        }
-
-        function proses() {
             let sales = document.getElementById('sales').value;
             let tanggal_pembuatan = document.getElementById('tanggal_pembuatan').value;
 
@@ -296,37 +277,161 @@
             }
 
             if (check === 0) {
-                $.ajax({
-                    url: "{{ route('buat_sampel_sales_post') }}",
-                    method: "POST",
-                    data: {
-                        sales: sales,
-                        tanggal_pembuatan: tanggal_pembuatan,
-                        barang: barang,
-                        _token: '{{csrf_token()}}'
-                    },
-                    success: function (params) {
-                        if (params.status) {
-                            localStorage.setItem('barangSampel', JSON.stringify([]));
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: 'Pembuatan Sampel Berhasil diProses!',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    location.reload();
-                                }
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: 'Pembuatan Sampel Gagal diProses!',
-                            });
-                        }
-                    }
+                let html = `
+                    <div class="table-responsive">
+                        <table class="table text-nowrap table-bordered">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nama Barang</th>
+                                <th>SKU</th>
+                                <th>QTY</th>
+                                <th>Harga</th>
+                                <th>Total Harga</th>
+                            </tr>
+                            </thead>
+                            <tbody>`
+
+                const rupiah = (number)=>{
+                    return new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR"
+                    }).format(number);
+                }
+                let no = 1;
+                let totalHargaBarang = 0;
+                barang.forEach(function (params) {
+                    html += `
+                                <tr>
+                                    <td>${no++}</td>
+                                    <td>${params.nama}</td>
+                                    <td>${params.sku}</td>
+                                    <td>${params.qty}</td>
+                                    <td>${rupiah(params.harga)}</td>
+                                    <td>${rupiah(params.total)}</td>
+                                </tr>
+                        `;
+                    totalHargaBarang += parseInt(params.total)
                 });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-end mt-4">
+                        <table>
+                            <tr>
+                                <td class="fw-bold">Total Harga</td>
+                                <td class="fw-bold ps-3">${rupiah(totalHargaBarang)}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <a class="btn btn-primary mt-4" onclick="proses()">Proses Sampel</a>
+                    </div>
+                `;
+
+                document.getElementById('listHitungSampel').innerHTML = html;
+
+                $('#hitungSampel').modal('show');
             }
+        }
+
+        function proses() {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success ms-2',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+            })
+
+            swalWithBootstrapButtons.fire({
+                title: 'Apakah kamu yakin?',
+                text: "Ingin memproses Sampel barang",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Lanjutkan Proses',
+                cancelButtonText: 'Tidak, Batalkan',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Proses Pembalian
+                    let sales = document.getElementById('sales').value;
+                    let tanggal_pembuatan = document.getElementById('tanggal_pembuatan').value;
+
+                    let barang = JSON.parse(localStorage.getItem('barangSampel'));
+
+                    let check = 0;
+                    if (sales === "") {
+                        check = check  + 1;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Sales tidak boleh kosong!',
+                        });
+                    }
+
+                    if (tanggal_pembuatan === "") {
+                        check = check  + 1;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Tanggal Pembuatan tidak boleh kosong!',
+                        });
+                    }
+
+                    if (barang.length === 0) {
+                        check = check  + 1;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Barang tidak boleh kosong!',
+                        });
+                    }
+
+                    if (check === 0) {
+                        $.ajax({
+                            url: "{{ route('buat_sampel_sales_post') }}",
+                            method: "POST",
+                            data: {
+                                sales: sales,
+                                tanggal_pembuatan: tanggal_pembuatan,
+                                barang: barang,
+                                _token: '{{csrf_token()}}'
+                            },
+                            success: function (params) {
+                                if (params.status) {
+                                    localStorage.setItem('barangSampel', JSON.stringify([]));
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Berhasil',
+                                        text: 'Pembuatan Sampel Berhasil diProses!',
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            location.reload();
+                                        }
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal',
+                                        text: 'Pembuatan Sampel Gagal diProses!',
+                                    });
+                                }
+                            }
+                        });
+                    }
+                } else if (
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                        'Batal',
+                        'Sampel tidak diproses',
+                        'error'
+                    )
+                }
+            });
         }
 
         viewListBarang()
