@@ -132,8 +132,6 @@
         </div>
     </div>
 
-    <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hitungPembelian">Tambah Barang</a>
-
     <div class="modal fade" id="hitungPembelian" tabindex="-1" aria-labelledby="exampleModalSmLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
