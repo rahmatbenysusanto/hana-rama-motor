@@ -39,4 +39,10 @@ class AuthController extends Controller
             return back();
         }
     }
+
+    public function logout()
+    {
+        Session::forget('data_user');
+        return view('login');
+    }
 }

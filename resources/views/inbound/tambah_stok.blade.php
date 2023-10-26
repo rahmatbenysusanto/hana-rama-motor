@@ -92,7 +92,6 @@
     </div>
 
     <div class="modal fade" id="tambahBarang" tabindex="-1" aria-labelledby="exampleModalScrollable2" data-bs-keyboard="false" aria-hidden="true">
-        <!-- Scrollable modal -->
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -128,6 +127,22 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="button" class="btn btn-primary" onclick="tambahBarang()">Tambah Barang</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hitungPembelian">Tambah Barang</a>
+
+    <div class="modal fade" id="hitungPembelian" tabindex="-1" aria-labelledby="exampleModalSmLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalSmLabel">Hitung Pembelian</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="listHitungPembelian"></div>
                 </div>
             </div>
         </div>
@@ -268,39 +283,6 @@
         }
 
         function prosesPembelianBarang() {
-            const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-success ms-2',
-                    cancelButton: 'btn btn-danger'
-                },
-                buttonsStyling: false
-            })
-
-            swalWithBootstrapButtons.fire({
-                title: 'Apakah kamu yakin?',
-                text: "Ingin memproses pembelian barang",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Lanjutkan Proses',
-                cancelButtonText: 'Tidak, Batalkan',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Proses Pembalian
-                    proses();
-                } else if (
-                    result.dismiss === Swal.DismissReason.cancel
-                ) {
-                    swalWithBootstrapButtons.fire(
-                        'Batal',
-                        'Pembelian tidak diproses',
-                        'error'
-                    )
-                }
-            });
-        }
-
-        function proses() {
             let supplier = document.getElementById('supplier').value;
             let tanggal_datang = document.getElementById('tanggal_datang').value;
             let invoice = document.getElementById('invoice').value;
@@ -346,40 +328,190 @@
             }
 
             if (check === 0) {
-                $.ajax({
-                    url: "{{ route('tambah_pembelian_barang_post') }}",
-                    method: "POST",
-                    data: {
-                        supplier: supplier,
-                        tanggal_datang: tanggal_datang,
-                        invoice: invoice,
-                        diskon_pembelian: diskon_pembelian,
-                        ppn: ppn,
-                        barang: barang,
-                        _token: '{{csrf_token()}}'
-                    },
-                    success: function (params) {
-                        if (params.status) {
-                            localStorage.setItem('barang', JSON.stringify([]));
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: 'Pembelian Barang Berhasil diProses!',
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    location.reload();
-                                }
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: 'Pembelian Barang Gagal diProses!',
-                            });
-                        }
+                let html = `
+                    <div class="table-responsive">
+                        <table class="table text-nowrap table-bordered">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nama Barang</th>
+                                <th>SKU</th>
+                                <th>QTY</th>
+                                <th>Harga</th>
+                                <th>Diskon</th>
+                                <th>Total Harga</th>
+                            </tr>
+                            </thead>
+                            <tbody>`
+
+                    const rupiah = (number)=>{
+                        return new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR"
+                        }).format(number);
                     }
-                });
+                    let no = 1;
+                    let totalHargaBarang = 0;
+                    barang.forEach(function (params) {
+                        html += `
+                                <tr>
+                                    <td>${no++}</td>
+                                    <td>${params.nama}</td>
+                                    <td>${params.sku}</td>
+                                    <td>${params.qty}</td>
+                                    <td>${rupiah(params.harga)}</td>
+                                    <td>${params.diskon}%</td>
+                                    <td>${rupiah(params.total)}</td>
+                                </tr>
+                        `;
+                        totalHargaBarang += parseInt(params.total)
+                    });
+
+                    let nominalDiskon = totalHargaBarang * (parseFloat(diskon_pembelian) / 100);
+                    totalHargaBarang = totalHargaBarang - nominalDiskon;
+                    let nominalPpn = totalHargaBarang * (parseFloat(ppn) / 100);
+                    let totalHarga = parseInt(totalHargaBarang) + parseInt(nominalPpn);
+
+                    html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-end mt-4">
+                        <table>
+                            <tr>
+                                <td class="fw-bold">Diskon</td>
+                                <td class="fw-bold ps-3">${diskon_pembelian}%</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">PPN</td>
+                                <td class="fw-bold ps-3">${ppn}%</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">Total Harga</td>
+                                <td class="fw-bold ps-3">${rupiah(totalHarga)}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <a class="btn btn-primary mt-4" onclick="proses()">Proses Pembelian</a>
+                    </div>
+                `;
+
+                document.getElementById('listHitungPembelian').innerHTML = html;
+
+                $('#hitungPembelian').modal('show');
             }
+        }
+
+        function proses() {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success ms-2',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+            })
+
+            swalWithBootstrapButtons.fire({
+                title: 'Apakah kamu yakin?',
+                text: "Ingin memproses pembelian barang",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Lanjutkan Proses',
+                cancelButtonText: 'Tidak, Batalkan',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Proses Pembalian
+                    let supplier = document.getElementById('supplier').value;
+                    let tanggal_datang = document.getElementById('tanggal_datang').value;
+                    let invoice = document.getElementById('invoice').value;
+                    let diskon_pembelian = document.getElementById('diskon_pembelian').value;
+                    let ppn = document.getElementById('ppn').value;
+                    let barang = JSON.parse(localStorage.getItem('barang'));
+
+                    let check = 0;
+                    if (supplier === "0") {
+                        check = check  + 1;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Supplier tidak boleh kosong!',
+                        });
+                    }
+
+                    if (tanggal_datang === "") {
+                        check = check  + 1;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Tanggal Datang tidak boleh kosong!',
+                        });
+                    }
+
+                    if (invoice === "") {
+                        check = check  + 1;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Invoice tidak boleh kosong!',
+                        });
+                    }
+
+                    if (barang.length === 0) {
+                        check = check  + 1;
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Barang tidak boleh kosong!',
+                        });
+                    }
+
+                    if (check === 0) {
+                        $.ajax({
+                            url: "{{ route('tambah_pembelian_barang_post') }}",
+                            method: "POST",
+                            data: {
+                                supplier: supplier,
+                                tanggal_datang: tanggal_datang,
+                                invoice: invoice,
+                                diskon_pembelian: diskon_pembelian,
+                                ppn: ppn,
+                                barang: barang,
+                                _token: '{{csrf_token()}}'
+                            },
+                            success: function (params) {
+                                if (params.status) {
+                                    localStorage.setItem('barang', JSON.stringify([]));
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Berhasil',
+                                        text: 'Pembelian Barang Berhasil diProses!',
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            location.reload();
+                                        }
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal',
+                                        text: 'Pembelian Barang Gagal diProses!',
+                                    });
+                                }
+                            }
+                        });
+                    }
+                } else if (
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                        'Batal',
+                        'Pembelian tidak diproses',
+                        'error'
+                    )
+                }
+            });
         }
 
         viewListBarang()

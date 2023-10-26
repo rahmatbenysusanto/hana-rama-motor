@@ -17,6 +17,7 @@ use App\Http\Controllers\DashboardController;
 Route::controller(AuthController::class)->group(function () {
     Route::get('/', 'index');
     Route::post('/login', 'login')->name('login');
+    Route::get('/logout', 'logout')->name('logout');
 });
 
 Route::group(['middleware' => 'ceklogin'], function () {
