@@ -25,4 +25,9 @@ class Transaksi extends Model
     {
         return $this->hasOne(Pembayaran::class, 'id', 'pembayaran_id');
     }
+
+    public function transaksiDetail(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TransaksiDetail::class, 'transaksi_id', 'id');
+    }
 }

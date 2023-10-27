@@ -36,3 +36,34 @@ function tanggal_format($date): string
 
     return $tanggal . ' ' . $bulan . ' ' . $tahun;
 }
+
+function getBulan() {
+    $bulan = date('m', time());
+    if ($bulan == '01') {
+        $bulan = 'Januari';
+    } elseif ($bulan == '02') {
+        $bulan = 'Februari';
+    } elseif ($bulan == '03') {
+        $bulan = 'Maret';
+    } elseif ($bulan == '04') {
+        $bulan = 'April';
+    } elseif ($bulan == '05') {
+        $bulan = 'Mei';
+    } elseif ($bulan == '06') {
+        $bulan = 'Juni';
+    } elseif ($bulan == '07') {
+        $bulan = 'Juli';
+    } elseif ($bulan == '08') {
+        $bulan = 'Agustus';
+    } elseif ($bulan == '09') {
+        $bulan = 'September';
+    } elseif ($bulan == '10') {
+        $bulan = 'Oktober';
+    } elseif ($bulan == '11') {
+        $bulan = 'November';
+    } elseif ($bulan == '12') {
+        $bulan = 'Desember';
+    }
+
+    return $bulan;
+}
