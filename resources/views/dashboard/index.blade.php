@@ -96,7 +96,7 @@
         <div class="col-xxl-3 col-xl-12">
             <div class="card custom-card recent-transactions-card overflow-hidden">
                 <div class="card-header justify-content-between">
-                    <div class="card-title">Stok Barang Minimal</div>
+                    <div class="card-title">Stok Barang Minimal </div>
                 </div>
                 <div class="card-body p-0">
                     <div class="list-group">
