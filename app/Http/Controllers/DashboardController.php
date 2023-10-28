@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Inventory;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +35,10 @@ class DashboardController extends Controller
 
         $pendapatanBersih = $pendapatanKotor - $dataPendapatanBersih;
 
+        // Stok Minimal Barang
+        $stokMinimal = Inventory::with('barang')->orderBy('stok', 'ASC')->limit(6)->get();
+
         $title = "dashboard utama";
-        return view('dashboard.index', compact("title", "jumlahPenjualan", "totalPiutang", "pendapatanKotor", 'pendapatanBersih'));
+        return view('dashboard.index', compact("title", "jumlahPenjualan", "totalPiutang", "pendapatanKotor", 'pendapatanBersih', 'stokMinimal'));
     }
 }
