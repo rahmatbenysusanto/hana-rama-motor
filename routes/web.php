@@ -23,6 +23,7 @@ Route::controller(AuthController::class)->group(function () {
 Route::group(['middleware' => 'ceklogin'], function () {
     Route::controller(DashboardController::class)->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
+        Route::get('/chart-penjualan-dashboard', 'dashboardChartTotalPenjualan')->name('dashboardChartTotalPenjualan');
     });
 
     Route::controller(\App\Http\Controllers\BarangController::class)->group(function () {

@@ -460,7 +460,7 @@
 <script src="{{ asset('assets/js/defaultmenu.js') }}"></script>
 
 <!-- APEX CHARTS JS -->
-<script src="{{ asset('assets/js/apexcharts.min.js') }}"></script>
+{{--<script src="{{ asset('assets/js/apexcharts.min.js') }}"></script>--}}
 
 <!-- JSVECTOR MAPS JS -->
 <script src="{{ asset('assets/js/jsvectormap.min.js') }}"></script>
@@ -509,6 +509,8 @@
 
 <!-- SELECT2 CDN -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 @if($alert = Session::get('success'))
     <script>
