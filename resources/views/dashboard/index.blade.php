@@ -104,11 +104,11 @@
                             <a href="javascript:void(0);" class="border-0">
                                 <div class="list-group-item border-0">
                                     <div class="d-flex align-items-start">
-                                    @if($m->kategori_id == 1)
+                                    @if($m->barang->kategori_id == 1)
                                             <span class="tansaction-icon bg-primary">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="svg-white" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><g><rect fill="none" height="24" width="24"/><path d="M18,6h-2c0-2.21-1.79-4-4-4S8,3.79,8,6H6C4.9,6,4,6.9,4,8v12c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V8C20,6.9,19.1,6,18,6z M12,4c1.1,0,2,0.9,2,2h-4C10,4.9,10.9,4,12,4z M18,20H6V8h2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V8h4v2c0,0.55,0.45,1,1,1s1-0.45,1-1V8 h2V20z"/></g></svg>
                                             </span>
-                                    @elseif($m->kategori_id == 2)
+                                    @elseif($m->barang->kategori_id == 2)
                                             <span class="tansaction-icon bg-info">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="svg-white" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><g><rect fill="none" height="24" width="24"/></g><g><g><path d="M20,2H4C3,2,2,2.9,2,4v3.01C2,7.73,2.43,8.35,3,8.7V20c0,1.1,1.1,2,2,2h14c0.9,0,2-0.9,2-2V8.7c0.57-0.35,1-0.97,1-1.69V4 C22,2.9,21,2,20,2z M19,20H5V9h14V20z M20,7H4V4h16V7z"/><rect height="2" width="6" x="9" y="12"/></g></g></svg>
                                             </span>
@@ -120,8 +120,8 @@
                                         <div class="w-100">
                                             <div class="d-flex align-items-top justify-content-between">
                                                 <div class="mt-0">
-                                                    <p class="mb-0 fw-semibold"><span class="me-3">{{ $m->nama_barang }}</span></p>
-                                                    <span class="mb-0 fs-12 text-muted">SKU {{ $m->sku }}</span>
+                                                    <p class="mb-0 fw-semibold"><span class="me-3">{{ $m->barang->nama_barang }}</span></p>
+                                                    <span class="mb-0 fs-12 text-muted">SKU {{ $m->barang->sku }}</span>
                                                 </div>
                                                 <div class="text-muted fs-12 text-center"></div>
                                                 <span class="ms-auto">

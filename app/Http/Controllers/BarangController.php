@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use App\Models\BarangRusak;
 use App\Models\InboundDetail;
+use App\Models\Inventory;
 use App\Models\Kategori;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -124,6 +125,7 @@ class BarangController extends Controller
             return back();
         }
         Barang::where('id', $id)->delete();
+        Inventory::where('barang_id', $id)->delete();
         Session::flash('success', 'Barang berhasil dihapus');
         return back();
     }
