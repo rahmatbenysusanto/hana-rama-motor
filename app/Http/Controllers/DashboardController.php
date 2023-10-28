@@ -36,7 +36,16 @@ class DashboardController extends Controller
         $pendapatanBersih = $pendapatanKotor - $dataPendapatanBersih;
 
         // Stok Minimal Barang
-        $stokMinimal = Inventory::with('barang')->orderBy('stok', 'ASC')->limit(6)->get();
+        $stokMinimal = DB::table('inventory')
+                        ->select([
+                            'inventory.stok',
+                            'barang.nama_barang',
+                            'barang.sku',
+                            'barang.kategori_id'
+                        ])
+                        ->leftJoin('barang', 'barang.id', '=', 'inventory.barang_id')
+                        ->limit(6)
+                        ->get();
 
         $title = "dashboard utama";
         return view('dashboard.index', compact("title", "jumlahPenjualan", "totalPiutang", "pendapatanKotor", 'pendapatanBersih', 'stokMinimal'));
