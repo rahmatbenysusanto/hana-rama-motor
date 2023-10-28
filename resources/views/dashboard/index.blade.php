@@ -120,7 +120,7 @@
                                         <div class="w-100">
                                             <div class="d-flex align-items-top justify-content-between">
                                                 <div class="mt-0">
-                                                    <p class="mb-0 fw-semibold"><span class="me-3"></span></p>
+                                                    <p class="mb-0 fw-semibold"><span class="me-3">{{ $m->barang->nama_barang }}</span></p>
                                                     <span class="mb-0 fs-12 text-muted">SKU </span>
                                                 </div>
                                                 <div class="text-muted fs-12 text-center"></div>
