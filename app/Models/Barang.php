@@ -16,7 +16,7 @@ class Barang extends Model
         return $this->hasOne(Inventory::class);
     }
 
-    public function kategori()
+    public function kategori(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Kategori::class, 'id', 'kategori_id');
     }
