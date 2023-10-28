@@ -11,7 +11,7 @@ class Inventory extends Model
     protected $table = "inventory";
     protected $fillable = ["barang_id", "stok"];
 
-    public function barang()
+    public function barang(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Barang::class, 'id', 'barang_id');
     }
