@@ -160,7 +160,7 @@
 
                 <ul class="main-menu">
                     <li class="slide__category"><span class="category-name">Main</span></li>
-                    <li class="slide has-sub {{ $title == "dashboard utama" ? "open" : "" }}">
+                    <li class="slide has-sub {{ $title == "dashboard utama" ? "open" : "" }} {{ $title == "dashboard oli" ? "open" : "" }} {{ $title == "dashboard ban" ? "open" : "" }} {{ $title == "dashboard sparepart" ? "open" : "" }}">
                         <a href="javascript:void(0);" class="side-menu__item">
                             <div  style="width: 20px;">
                                 <i class="fa-regular fa-house fa-lg"></i>
@@ -174,14 +174,14 @@
                             <li class="slide {{ $title == "dashboard utama" ? "active" : "" }}">
                                 <a href="{{ route('dashboard') }}" class="side-menu__item {{ $title == "dashboard utama" ? "active" : "" }}">Dashboard Utama</a>
                             </li>
-                            <li class="slide">
-                                <a href="#" class="side-menu__item">Dashboard Oli</a>
+                            <li class="slide {{ $title == "dashboard oli" ? "active" : "" }}">
+                                <a href="{{ route('dashboard_oli') }}" class="side-menu__item {{ $title == "dashboard oli" ? "active" : "" }}">Dashboard Oli</a>
                             </li>
-                            <li class="slide">
-                                <a href="#" class="side-menu__item">Dashboard Ban</a>
+                            <li class="slide {{ $title == "dashboard ban" ? "active" : "" }}">
+                                <a href="{{ route('dashboard_ban') }}" class="side-menu__item {{ $title == "dashboard ban" ? "active" : "" }}">Dashboard Ban</a>
                             </li>
-                            <li class="slide">
-                                <a href="#" class="side-menu__item">Dashboard Sparepart</a>
+                            <li class="slide {{ $title == "dashboard sparepart" ? "active" : "" }}">
+                                <a href="{{ route('dashboard_sparepart') }}" class="side-menu__item {{ $title == "dashboard sparepart" ? "active" : "" }}">Dashboard Sparepart</a>
                             </li>
                         </ul>
                     </li>

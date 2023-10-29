@@ -23,7 +23,13 @@ Route::controller(AuthController::class)->group(function () {
 Route::group(['middleware' => 'ceklogin'], function () {
     Route::controller(DashboardController::class)->group(function () {
         Route::get('/dashboard', 'index')->name('dashboard');
+        Route::get('/dashboard-oli', 'oli')->name('dashboard_oli');
+        Route::get('/dashboard-ban', 'ban')->name('dashboard_ban');
+        Route::get('/dashboard-sparepart', 'sparepart')->name('dashboard_sparepart');
         Route::get('/chart-penjualan-dashboard', 'dashboardChartTotalPenjualan')->name('dashboardChartTotalPenjualan');
+        Route::get('/data-dashboard-oli', 'getDataOli')->name('getDataOli');
+        Route::get('/data-dashboard-ban', 'getDataBan')->name('getDataBan');
+        Route::get('/data-dashboard-sparepart', 'getDataSparepart')->name('getDataSparepart');
     });
 
     Route::controller(\App\Http\Controllers\BarangController::class)->group(function () {

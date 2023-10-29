@@ -7,7 +7,7 @@
             <nav>
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboards</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Sales</li>
+                    <li class="breadcrumb-item active" aria-current="page">Dashboard Utama</li>
                 </ol>
             </nav>
         </div>
@@ -169,7 +169,7 @@
                                     </p>
                                     <p class="mb-2 fs-12">
                                         <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">@currency($totalPembelian)</span>
-                                        <span class="d-block fs-10 fw-semibold text-muted">Jumlah Penjualan Bulan {{ getBulan() }}</span>
+                                        <span class="d-block fs-10 fw-semibold text-muted">Jumlah Pembelian Bulan {{ getBulan() }}</span>
                                     </p>
                                     <a href="{{ route('daftar_transaksi') }}" class="fs-12 mb-0 text-primary">Lihat Detail<i class="ti ti-chevron-right ms-1"></i></a>
                                 </div>

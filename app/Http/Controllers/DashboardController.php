@@ -175,4 +175,397 @@ class DashboardController extends Controller
             'sparepart' => $dataPenjualanSparepart
         ]);
     }
+
+    public function oli(): View
+    {
+        $title = "dashboard oli";
+        return view('dashboard.dashboard_oli', compact('title'));
+    }
+
+    public function getDataOli(): \Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory
+    {
+        $bulan = date('m', time());
+        $tahun = date('Y', time());
+
+        // Total Penjualan
+        $totalPenjualan = 0;
+        $jumlahTransaksiOli = 0;
+        $totalPenjualanBersih = 0;
+        $totalPenjualanKotor = 0;
+        $totalPenjualanTempo = 0;
+        $dataTransaksi = DB::table('transaksi')
+                            ->select([
+                                'transaksi_detail.total_harga',
+                                'transaksi.diskon',
+                                'transaksi.id'
+                            ])
+                            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                            ->WhereMonth('tanggal_penjualan', $bulan)
+                            ->whereYear('tanggal_penjualan', $tahun)
+                            ->where('barang.kategori_id', 1)
+                            ->groupBy('transaksi.id')
+                            ->get();
+
+        foreach ($dataTransaksi as $transaksi) {
+            // Jumlah Penjualan OLI
+            $jumlahTransaksiOli++;
+
+            // Total Penjualan
+            $dataOli = DB::table('transaksi')
+                ->select([
+                    'inventory_detail.harga',
+                    'transaksi_detail.barang_id',
+                    'transaksi_detail.total_harga',
+                    'transaksi_detail.qty'
+                ])
+                ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+                ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                ->WhereMonth('tanggal_penjualan', $bulan)
+                ->whereYear('tanggal_penjualan', $tahun)
+                ->where('barang.kategori_id', 1)
+                ->where('transaksi.id', $transaksi->id);
+
+            $dataTotalPenjualan = $dataOli->sum('transaksi_detail.total_harga');
+
+            $totalPenjualan += $dataTotalPenjualan - ($dataTotalPenjualan * ($transaksi->diskon / 100));
+
+            // Jumlah Penjualan Bersih
+            $dataPenjualanBersih = DB::table('transaksi')
+                ->select([
+                    'inventory_detail.harga',
+                    'transaksi_detail.barang_id',
+                    'transaksi_detail.total_harga',
+                    'transaksi_detail.qty'
+                ])
+                ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+                ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                ->WhereMonth('tanggal_penjualan', $bulan)
+                ->whereYear('tanggal_penjualan', $tahun)
+                ->where('barang.kategori_id', 1)
+                ->where('transaksi.id', $transaksi->id)
+                ->where('status_pembayaran', 'Lunas')
+                ->get();
+
+            $dataPendapatanBersih = 0;
+            foreach ($dataPenjualanBersih as $bersih) {
+                $dataPendapatanBersih += $bersih->harga * $bersih->qty;
+            }
+            $totalPenjualanBersih += $dataPendapatanBersih;
+
+            // Jumlah Penjualan Kotor
+            $dataTotalPenjualanKotor = DB::table('transaksi')
+                ->select([
+                    'inventory_detail.harga',
+                    'transaksi_detail.barang_id',
+                    'transaksi_detail.total_harga',
+                    'transaksi_detail.qty'
+                ])
+                ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+                ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                ->WhereMonth('tanggal_penjualan', $bulan)
+                ->whereYear('tanggal_penjualan', $tahun)
+                ->where('barang.kategori_id', 1)
+                ->where('transaksi.id', $transaksi->id)
+                ->where('status_pembayaran', 'Lunas')
+                ->sum('transaksi_detail.total_harga');
+
+            $cariTotalPenjualanKotor = $dataTotalPenjualanKotor - ($dataTotalPenjualanKotor * ($transaksi->diskon / 100));
+            $totalPenjualanKotor += $cariTotalPenjualanKotor;
+
+            // Jumlah Penjualan Piutang
+            $dataTotalPenjualanTempo = DB::table('transaksi')
+                ->select([
+                    'inventory_detail.harga',
+                    'transaksi_detail.barang_id',
+                    'transaksi_detail.total_harga',
+                    'transaksi_detail.qty'
+                ])
+                ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+                ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                ->WhereMonth('tanggal_penjualan', $bulan)
+                ->whereYear('tanggal_penjualan', $tahun)
+                ->where('barang.kategori_id', 1)
+                ->where('transaksi.id', $transaksi->id)
+                ->where('tanggal_tempo', '!=', null)
+                ->where('status_pembayaran', 'Belum DiBayar')
+                ->sum('transaksi_detail.total_harga');
+
+            $totalPenjualanTempo += $dataTotalPenjualanTempo - ($dataTotalPenjualanTempo * ($transaksi->diskon / 100));
+        }
+
+        return response([
+            'total_penjualan'   => $totalPenjualan,
+            'penjualan_bersih'  => $totalPenjualanKotor - $totalPenjualanBersih,
+            'penjualan_kotor'   => $totalPenjualanKotor,
+            'penjualan_tempo'   => $totalPenjualanTempo,
+            'jumlah_transaksi'  => $jumlahTransaksiOli
+        ]);
+    }
+
+    public function getDataBan(): \Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory
+    {
+        $bulan = date('m', time());
+        $tahun = date('Y', time());
+
+        // Total Penjualan
+        $totalPenjualan = 0;
+        $jumlahTransaksiOli = 0;
+        $totalPenjualanBersih = 0;
+        $totalPenjualanKotor = 0;
+        $totalPenjualanTempo = 0;
+        $dataTransaksi = DB::table('transaksi')
+            ->select([
+                'transaksi_detail.total_harga',
+                'transaksi.diskon',
+                'transaksi.id'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->WhereMonth('tanggal_penjualan', $bulan)
+            ->whereYear('tanggal_penjualan', $tahun)
+            ->where('barang.kategori_id', 2)
+            ->groupBy('transaksi.id')
+            ->get();
+
+        foreach ($dataTransaksi as $transaksi) {
+            // Jumlah Penjualan OLI
+            $jumlahTransaksiOli++;
+
+            // Total Penjualan
+            $dataOli = DB::table('transaksi')
+                ->select([
+                    'inventory_detail.harga',
+                    'transaksi_detail.barang_id',
+                    'transaksi_detail.total_harga',
+                    'transaksi_detail.qty'
+                ])
+                ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+                ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                ->WhereMonth('tanggal_penjualan', $bulan)
+                ->whereYear('tanggal_penjualan', $tahun)
+                ->where('barang.kategori_id', 2)
+                ->where('transaksi.id', $transaksi->id);
+
+            $dataTotalPenjualan = $dataOli->sum('transaksi_detail.total_harga');
+
+            $totalPenjualan += $dataTotalPenjualan - ($dataTotalPenjualan * ($transaksi->diskon / 100));
+
+            // Jumlah Penjualan Bersih
+            $dataPenjualanBersih = DB::table('transaksi')
+                ->select([
+                    'inventory_detail.harga',
+                    'transaksi_detail.barang_id',
+                    'transaksi_detail.total_harga',
+                    'transaksi_detail.qty'
+                ])
+                ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+                ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                ->WhereMonth('tanggal_penjualan', $bulan)
+                ->whereYear('tanggal_penjualan', $tahun)
+                ->where('barang.kategori_id', 2)
+                ->where('transaksi.id', $transaksi->id)
+                ->where('status_pembayaran', 'Lunas')
+                ->get();
+
+            $dataPendapatanBersih = 0;
+            foreach ($dataPenjualanBersih as $bersih) {
+                $dataPendapatanBersih += $bersih->harga * $bersih->qty;
+            }
+            $totalPenjualanBersih += $dataPendapatanBersih;
+
+            // Jumlah Penjualan Kotor
+            $dataTotalPenjualanKotor = DB::table('transaksi')
+                ->select([
+                    'inventory_detail.harga',
+                    'transaksi_detail.barang_id',
+                    'transaksi_detail.total_harga',
+                    'transaksi_detail.qty'
+                ])
+                ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+                ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                ->WhereMonth('tanggal_penjualan', $bulan)
+                ->whereYear('tanggal_penjualan', $tahun)
+                ->where('barang.kategori_id', 2)
+                ->where('transaksi.id', $transaksi->id)
+                ->where('status_pembayaran', 'Lunas')
+                ->sum('transaksi_detail.total_harga');
+
+            $cariTotalPenjualanKotor = $dataTotalPenjualanKotor - ($dataTotalPenjualanKotor * ($transaksi->diskon / 100));
+            $totalPenjualanKotor += $cariTotalPenjualanKotor;
+
+            // Jumlah Penjualan Piutang
+            $dataTotalPenjualanTempo = DB::table('transaksi')
+                ->select([
+                    'inventory_detail.harga',
+                    'transaksi_detail.barang_id',
+                    'transaksi_detail.total_harga',
+                    'transaksi_detail.qty'
+                ])
+                ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+                ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                ->WhereMonth('tanggal_penjualan', $bulan)
+                ->whereYear('tanggal_penjualan', $tahun)
+                ->where('barang.kategori_id', 2)
+                ->where('transaksi.id', $transaksi->id)
+                ->where('tanggal_tempo', '!=', null)
+                ->where('status_pembayaran', 'Belum DiBayar')
+                ->sum('transaksi_detail.total_harga');
+
+            $totalPenjualanTempo += $dataTotalPenjualanTempo - ($dataTotalPenjualanTempo * ($transaksi->diskon / 100));
+        }
+
+        return response([
+            'total_penjualan'   => $totalPenjualan,
+            'penjualan_bersih'  => $totalPenjualanKotor - $totalPenjualanBersih,
+            'penjualan_kotor'   => $totalPenjualanKotor,
+            'penjualan_tempo'   => $totalPenjualanTempo,
+            'jumlah_transaksi'  => $jumlahTransaksiOli
+        ]);
+    }
+
+    public function getDataSparepart(): \Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory
+    {
+        $bulan = date('m', time());
+        $tahun = date('Y', time());
+
+        // Total Penjualan
+        $totalPenjualan = 0;
+        $jumlahTransaksiOli = 0;
+        $totalPenjualanBersih = 0;
+        $totalPenjualanKotor = 0;
+        $totalPenjualanTempo = 0;
+        $dataTransaksi = DB::table('transaksi')
+            ->select([
+                'transaksi_detail.total_harga',
+                'transaksi.diskon',
+                'transaksi.id'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->WhereMonth('tanggal_penjualan', $bulan)
+            ->whereYear('tanggal_penjualan', $tahun)
+            ->where('barang.kategori_id', 3)
+            ->groupBy('transaksi.id')
+            ->get();
+
+        foreach ($dataTransaksi as $transaksi) {
+            // Jumlah Penjualan OLI
+            $jumlahTransaksiOli++;
+
+            // Total Penjualan
+            $dataOli = DB::table('transaksi')
+                ->select([
+                    'inventory_detail.harga',
+                    'transaksi_detail.barang_id',
+                    'transaksi_detail.total_harga',
+                    'transaksi_detail.qty'
+                ])
+                ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+                ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                ->WhereMonth('tanggal_penjualan', $bulan)
+                ->whereYear('tanggal_penjualan', $tahun)
+                ->where('barang.kategori_id', 3)
+                ->where('transaksi.id', $transaksi->id);
+
+            $dataTotalPenjualan = $dataOli->sum('transaksi_detail.total_harga');
+
+            $totalPenjualan += $dataTotalPenjualan - ($dataTotalPenjualan * ($transaksi->diskon / 100));
+
+            // Jumlah Penjualan Bersih
+            $dataPenjualanBersih = DB::table('transaksi')
+                ->select([
+                    'inventory_detail.harga',
+                    'transaksi_detail.barang_id',
+                    'transaksi_detail.total_harga',
+                    'transaksi_detail.qty'
+                ])
+                ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+                ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                ->WhereMonth('tanggal_penjualan', $bulan)
+                ->whereYear('tanggal_penjualan', $tahun)
+                ->where('barang.kategori_id', 3)
+                ->where('transaksi.id', $transaksi->id)
+                ->where('status_pembayaran', 'Lunas')
+                ->get();
+
+            $dataPendapatanBersih = 0;
+            foreach ($dataPenjualanBersih as $bersih) {
+                $dataPendapatanBersih += $bersih->harga * $bersih->qty;
+            }
+            $totalPenjualanBersih += $dataPendapatanBersih;
+
+            // Jumlah Penjualan Kotor
+            $dataTotalPenjualanKotor = DB::table('transaksi')
+                ->select([
+                    'inventory_detail.harga',
+                    'transaksi_detail.barang_id',
+                    'transaksi_detail.total_harga',
+                    'transaksi_detail.qty'
+                ])
+                ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+                ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                ->WhereMonth('tanggal_penjualan', $bulan)
+                ->whereYear('tanggal_penjualan', $tahun)
+                ->where('barang.kategori_id', 3)
+                ->where('transaksi.id', $transaksi->id)
+                ->where('status_pembayaran', 'Lunas')
+                ->sum('transaksi_detail.total_harga');
+
+            $cariTotalPenjualanKotor = $dataTotalPenjualanKotor - ($dataTotalPenjualanKotor * ($transaksi->diskon / 100));
+            $totalPenjualanKotor += $cariTotalPenjualanKotor;
+
+            // Jumlah Penjualan Piutang
+            $dataTotalPenjualanTempo = DB::table('transaksi')
+                ->select([
+                    'inventory_detail.harga',
+                    'transaksi_detail.barang_id',
+                    'transaksi_detail.total_harga',
+                    'transaksi_detail.qty'
+                ])
+                ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+                ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+                ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+                ->WhereMonth('tanggal_penjualan', $bulan)
+                ->whereYear('tanggal_penjualan', $tahun)
+                ->where('barang.kategori_id', 3)
+                ->where('transaksi.id', $transaksi->id)
+                ->where('tanggal_tempo', '!=', null)
+                ->where('status_pembayaran', 'Belum DiBayar')
+                ->sum('transaksi_detail.total_harga');
+
+            $totalPenjualanTempo += $dataTotalPenjualanTempo - ($dataTotalPenjualanTempo * ($transaksi->diskon / 100));
+        }
+
+        return response([
+            'total_penjualan'   => $totalPenjualan,
+            'penjualan_bersih'  => $totalPenjualanKotor - $totalPenjualanBersih,
+            'penjualan_kotor'   => $totalPenjualanKotor,
+            'penjualan_tempo'   => $totalPenjualanTempo,
+            'jumlah_transaksi'  => $jumlahTransaksiOli
+        ]);
+    }
+
+    public function ban(): View
+    {
+        $title = "dashboard ban";
+        return view('dashboard.dashboard_ban', compact('title'));
+    }
+
+    public function sparepart(): View
+    {
+        $title = "dashboard sparepart";
+        return view('dashboard.dashboard_sparepart', compact('title'));
+    }
 }
