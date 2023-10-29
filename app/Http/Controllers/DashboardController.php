@@ -178,8 +178,20 @@ class DashboardController extends Controller
 
     public function oli(): View
     {
+        // Stok Minimal Barang
+        $stokMinimal = DB::table('inventory')
+            ->select([
+                'inventory.stok',
+                'barang.nama_barang',
+                'barang.sku',
+                'barang.kategori_id'
+            ])
+            ->leftJoin('barang', 'barang.id', '=', 'inventory.barang_id')
+            ->where('barang.kategori_id', 1)
+            ->orderBy('inventory.stok', 'ASC')->limit(12)->get();
+
         $title = "dashboard oli";
-        return view('dashboard.dashboard_oli', compact('title'));
+        return view('dashboard.dashboard_oli', compact('title', 'stokMinimal'));
     }
 
     public function getDataOli(): \Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory
@@ -559,13 +571,37 @@ class DashboardController extends Controller
 
     public function ban(): View
     {
+        // Stok Minimal Barang
+        $stokMinimal = DB::table('inventory')
+            ->select([
+                'inventory.stok',
+                'barang.nama_barang',
+                'barang.sku',
+                'barang.kategori_id'
+            ])
+            ->leftJoin('barang', 'barang.id', '=', 'inventory.barang_id')
+            ->where('barang.kategori_id', 2)
+            ->orderBy('inventory.stok', 'ASC')->limit(12)->get();
+
         $title = "dashboard ban";
-        return view('dashboard.dashboard_ban', compact('title'));
+        return view('dashboard.dashboard_ban', compact('title', 'stokMinimal'));
     }
 
     public function sparepart(): View
     {
+        // Stok Minimal Barang
+        $stokMinimal = DB::table('inventory')
+            ->select([
+                'inventory.stok',
+                'barang.nama_barang',
+                'barang.sku',
+                'barang.kategori_id'
+            ])
+            ->leftJoin('barang', 'barang.id', '=', 'inventory.barang_id')
+            ->where('barang.kategori_id', 3)
+            ->orderBy('inventory.stok', 'ASC')->limit(12)->get();
+
         $title = "dashboard sparepart";
-        return view('dashboard.dashboard_sparepart', compact('title'));
+        return view('dashboard.dashboard_sparepart', compact('title', 'stokMinimal'));
     }
 }
