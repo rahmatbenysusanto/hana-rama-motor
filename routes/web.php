@@ -30,6 +30,10 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::get('/data-dashboard-oli', 'getDataOli')->name('getDataOli');
         Route::get('/data-dashboard-ban', 'getDataBan')->name('getDataBan');
         Route::get('/data-dashboard-sparepart', 'getDataSparepart')->name('getDataSparepart');
+
+        Route::get('/chart-penjualan-oli', 'chart_oli')->name('chart_oli');
+        Route::get('/chart-penjualan-ban', 'chart_ban')->name('chart_ban');
+        Route::get('/chart-penjualan-sparepart', 'chart_sparepart')->name('chart_sparepart');
     });
 
     Route::controller(\App\Http\Controllers\BarangController::class)->group(function () {

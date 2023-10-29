@@ -135,112 +135,18 @@
                 </div>
             </div>
         </div>
-        {{--        <div class="col-lg-6 col-sm-12 col-md-6 col-xxl-6 col-xl-8">--}}
-        {{--            <div class="row">--}}
-        {{--                <div class="col-6">--}}
-        {{--                    <div class="card custom-card">--}}
-        {{--                        <div class="card-body">--}}
-        {{--                            <div class="row">--}}
-        {{--                                <div class="col-12 pe-0">--}}
-        {{--                                    <p class="mb-2">--}}
-        {{--                                        <span class="fs-16">Jumlah Pembelian Barang</span>--}}
-        {{--                                    </p>--}}
-        {{--                                    <p class="mb-2 fs-12">--}}
-        {{--                                        <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">{{ number_format($jumlahPembelian) }} Pcs</span>--}}
-        {{--                                        <span class="d-block fs-10 fw-semibold text-muted">Jumlah Pembelian Bulan {{ getBulan() }}</span>--}}
-        {{--                                    </p>--}}
-        {{--                                    <a href="{{ route('daftar_transaksi') }}" class="fs-12 mb-0 text-primary">Lihat Detail<i class="ti ti-chevron-right ms-1"></i></a>--}}
-        {{--                                </div>--}}
-        {{--                            </div>--}}
-        {{--                        </div>--}}
-        {{--                    </div>--}}
-        {{--                </div>--}}
-        {{--                <div class="col-6">--}}
-        {{--                    <div class="card custom-card">--}}
-        {{--                        <div class="card-body">--}}
-        {{--                            <div class="row">--}}
-        {{--                                <div class="col-12 pe-0">--}}
-        {{--                                    <p class="mb-2">--}}
-        {{--                                        <span class="fs-16">Total Pembelian Barang</span>--}}
-        {{--                                    </p>--}}
-        {{--                                    <p class="mb-2 fs-12">--}}
-        {{--                                        <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">@currency($totalPembelian)</span>--}}
-        {{--                                        <span class="d-block fs-10 fw-semibold text-muted">Jumlah Pembelian Bulan {{ getBulan() }}</span>--}}
-        {{--                                    </p>--}}
-        {{--                                    <a href="{{ route('daftar_transaksi') }}" class="fs-12 mb-0 text-primary">Lihat Detail<i class="ti ti-chevron-right ms-1"></i></a>--}}
-        {{--                                </div>--}}
-        {{--                            </div>--}}
-        {{--                        </div>--}}
-        {{--                    </div>--}}
-        {{--                </div>--}}
-        {{--            </div>--}}
-        {{--            <div class="card custom-card">--}}
-        {{--                <div class="card-header">--}}
-        {{--                    <div class="card-title">--}}
-        {{--                        Penjualan Tahun {{ date('Y', time()) }}--}}
-        {{--                    </div>--}}
-        {{--                </div>--}}
-        {{--                <div class="card-body">--}}
-        {{--                    <div id="chartPenjualan"></div>--}}
-        {{--                </div>--}}
-        {{--            </div>--}}
-        {{--        </div>--}}
-        {{--        <div class="col-lg-6 col-sm-12 col-md-6 col-xxl-3 col-xl-4">--}}
-        {{--            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">--}}
-        {{--                <div class="card custom-card">--}}
-        {{--                    <div class="card-body">--}}
-        {{--                        <div class="row">--}}
-        {{--                            <div class="col-12 pe-0">--}}
-        {{--                                <p class="mb-2">--}}
-        {{--                                    <span class="fs-16">Jumlah Penjualan</span>--}}
-        {{--                                </p>--}}
-        {{--                                <p class="mb-2 fs-12">--}}
-        {{--                                    <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">{{ $jumlahPenjualan }}</span>--}}
-        {{--                                    <span class="d-block fs-10 fw-semibold text-muted">Jumlah Penjualan Bulan {{ getBulan() }}</span>--}}
-        {{--                                </p>--}}
-        {{--                                <a href="{{ route('daftar_transaksi') }}" class="fs-12 mb-0 text-primary">Lihat Detail<i class="ti ti-chevron-right ms-1"></i></a>--}}
-        {{--                            </div>--}}
-        {{--                        </div>--}}
-        {{--                    </div>--}}
-        {{--                </div>--}}
-        {{--            </div>--}}
-        {{--            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">--}}
-        {{--                <div class="card custom-card">--}}
-        {{--                    <div class="card-body">--}}
-        {{--                        <div class="row">--}}
-        {{--                            <div class="col-12 pe-0">--}}
-        {{--                                <p class="mb-2">--}}
-        {{--                                    <span class="fs-16">Jumlah Pembayaran Tempo</span>--}}
-        {{--                                </p>--}}
-        {{--                                <p class="mb-2 fs-12">--}}
-        {{--                                    <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">{{ $totalTempo }}</span>--}}
-        {{--                                    <span class="d-block fs-10 fw-semibold text-muted">Jumlah Penjualan Bulan {{ getBulan() }}</span>--}}
-        {{--                                </p>--}}
-        {{--                                <a href="{{ route('daftar_transaksi') }}" class="fs-12 mb-0 text-primary">Lihat Detail<i class="ti ti-chevron-right ms-1"></i></a>--}}
-        {{--                            </div>--}}
-        {{--                        </div>--}}
-        {{--                    </div>--}}
-        {{--                </div>--}}
-        {{--            </div>--}}
-        {{--            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">--}}
-        {{--                <div class="card custom-card">--}}
-        {{--                    <div class="card-body">--}}
-        {{--                        <div class="row">--}}
-        {{--                            <div class="col-12 pe-0">--}}
-        {{--                                <p class="mb-2">--}}
-        {{--                                    <span class="fs-16">Pembayaran Belum Lunas</span>--}}
-        {{--                                </p>--}}
-        {{--                                <p class="mb-2 fs-12">--}}
-        {{--                                    <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">{{ $totalBelumDiBayar }}</span>--}}
-        {{--                                    <span class="d-block fs-10 fw-semibold text-muted">Jumlah Penjualan Bulan {{ getBulan() }}</span>--}}
-        {{--                                </p>--}}
-        {{--                                <a href="{{ route('daftar_transaksi') }}" class="fs-12 mb-0 text-primary">Lihat Detail<i class="ti ti-chevron-right ms-1"></i></a>--}}
-        {{--                            </div>--}}
-        {{--                        </div>--}}
-        {{--                    </div>--}}
-        {{--                </div>--}}
-        {{--            </div>--}}
-        {{--        </div>--}}
+        <div class="col-lg-6 col-sm-12 col-md-6 col-xxl-6 col-xl-8">
+            <div class="card custom-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        Penjualan Tahun {{ date('Y', time()) }}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="chartBan"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
 @endsection
@@ -262,6 +168,42 @@
                 document.getElementById('pendapatanBersih').innerText = rupiah(res.penjualan_bersih);
                 document.getElementById('pendapatanKotor').innerText = rupiah(res.penjualan_kotor);
                 document.getElementById('totalPiutang').innerText = rupiah(res.penjualan_tempo);
+            }
+        });
+
+        $.ajax({
+            url: '{{ route('chart_ban') }}',
+            method: 'GET',
+            success: function (res) {
+                let dataPenjualan = {
+                    series: [{
+                        name: 'series1',
+                        data: res.penjualan
+                    }],
+                    chart: {
+                        height: 350,
+                        type: 'area'
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        curve: 'smooth'
+                    },
+                    xaxis: {
+                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'],
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                return rupiah(val)
+                            }
+                        }
+                    },
+                };
+
+                let hahaha = new ApexCharts(document.querySelector("#chartBan"), dataPenjualan);
+                hahaha.render();
             }
         });
     </script>
