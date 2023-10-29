@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Inbound;
 use App\Models\Inventory;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
@@ -49,8 +50,12 @@ class DashboardController extends Controller
         // Jumlah Tempo
         $totalBelumDiBayar = Transaksi::WhereMonth('tanggal_penjualan', $bulan)->whereYear('tanggal_penjualan', $tahun)->where('status_pembayaran', 'Belum DiBayar')->count();
 
+        // Jumlah Pembelian
+        $jumlahPembelian = Inbound::WhereMonth('tanggal_datang', $bulan)->whereYear('tanggal_datang', $tahun)->sum('qty_barang');
+        $totalPembelian = Inbound::WhereMonth('tanggal_datang', $bulan)->whereYear('tanggal_datang', $tahun)->sum('total_harga');
+
         $title = "dashboard utama";
-        return view('dashboard.index', compact("title", "jumlahPenjualan", "totalPiutang", "pendapatanKotor", 'pendapatanBersih', 'stokMinimal', 'totalPenjualan', 'totalTempo', 'totalBelumDiBayar'));
+        return view('dashboard.index', compact("title", "jumlahPenjualan", "totalPiutang", "pendapatanKotor", 'pendapatanBersih', 'stokMinimal', 'totalPenjualan', 'totalTempo', 'totalBelumDiBayar', 'totalPembelian', 'jumlahPembelian'));
     }
 
     public function dashboardChartTotalPenjualan(): \Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory
