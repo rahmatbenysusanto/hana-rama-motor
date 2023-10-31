@@ -79,6 +79,9 @@ class TransaksiController extends Controller
                 $barangs = $request->post('barang');
                 foreach ($barangs as $barang) {
                     $from = Inventory::where('barang_id', $barang['id'])->first();
+                    if ($from->stok > $barang['qty']) {
+                        abort('Stok Produk tidak cukup!');
+                    }
                     $inventory = Inventory::where('barang_id', $barang['id'])->first();
                     $inventory_detail = InventoryDetail::where('inventory_id', $inventory->id)->where('qty', '!=', 0)->get();
 
@@ -136,7 +139,7 @@ class TransaksiController extends Controller
             Log::error('Penjualan, ' . $err->getMessage());
             return response([
                 'status'    => false,
-                'message'   => 'Buat Penjualan gagal'
+                'message'   => 'Buat Penjualan gagal, ' . $err->getMessage()
             ]);
         }
     }
@@ -231,6 +234,9 @@ class TransaksiController extends Controller
                 $dataBarang = $request->post('barang');
                 foreach ($dataBarang as $barang) {
                     $from = Inventory::where('barang_id', $barang['id'])->first();
+                    if ($from->stok > $barang['qty']) {
+                        abort('Stok Produk tidak cukup!');
+                    }
                     $inventory = Inventory::where('barang_id', $barang['id'])->first();
                     $inventory_detail = InventoryDetail::where('inventory_id', $inventory->id)->where('qty', '!=', 0)->get();
 
@@ -305,7 +311,7 @@ class TransaksiController extends Controller
             Log::error('Buat Sampel, ' . $err->getMessage());
             return response([
                'status'     => false,
-               'message'    => "Buat sample error"
+               'message'    => "Buat sample error, " . $err->getMessage()
             ]);
         }
     }

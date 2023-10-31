@@ -335,7 +335,7 @@
                     </li>
 
                     <li class="slide__category"><span class="category-name">Laporan</span></li>
-                    <li class="slide has-sub">
+                    <li class="slide has-sub {{ $title == "laporan transaksi" ? "open" : "" }}">
                         <a href="javascript:void(0);" class="side-menu__item">
                             <div  style="width: 20px;">
                                 <i class="fa-regular fa-calendar-lines fa-lg"></i>
@@ -346,6 +346,9 @@
                             </div>
                         </a>
                         <ul class="slide-menu child1">
+                            <li class="slide {{ $title == "laporan transaksi" ? "active" : "" }}">
+                                <a href="{{ route('laporan_transaksi') }}" class="side-menu__item {{ $title == "laporan transaksi" ? "active" : "" }}">Laporan Transaksi</a>
+                            </li>
                             <li class="slide">
                                 <a href="#" class="side-menu__item">Laporan Oli</a>
                             </li>

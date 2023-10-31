@@ -104,7 +104,7 @@
                         <select class="form-control" id="barang">
                             <option value="0">Pilih Barang</option>
                             @foreach($barang as $b)
-                                <option value="{{ $b->id }}">{{ $b->kategori->nama }} | {{ $b->sku }} | {{ $b->nama_barang }}</option>
+                                <option value="{{ $b->id }}"> | {{ $b->sku }} | {{ $b->nama_barang }}</option>
                             @endforeach
                         </select>
                     </div>

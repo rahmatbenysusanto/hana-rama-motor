@@ -120,5 +120,9 @@ Route::group(['middleware' => 'ceklogin'], function () {
 
         Route::post('/proses-pembayaran', 'proses_pembayaran')->name('proses_pembayaran');
     });
+
+    Route::controller(\App\Http\Controllers\LaporanController::class)->group(function () {
+        Route::get('/laporan-transaksi', 'laporan_transaksi')->name('laporan_transaksi');
+    });
 });
 
