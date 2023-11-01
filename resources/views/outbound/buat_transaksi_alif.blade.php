@@ -600,7 +600,7 @@
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Gagal',
-                                        text: 'Penjualan Barang Gagal diProses!',
+                                        text: params.message,
                                     });
                                 }
                             }
