@@ -79,7 +79,7 @@ class TransaksiController extends Controller
                 $barangs = $request->post('barang');
                 foreach ($barangs as $barang) {
                     $from = Inventory::where('barang_id', $barang['id'])->first();
-                    if ($from->stok >= $barang['qty']) {
+                    if ($from->stok < $barang['qty']) {
                         abort(400,'Stok Produk '.$barang['nama'].' tidak cukup!, Stok Barang Hanya tersedia '.$from->stok);
                     }
                     $inventory = Inventory::where('barang_id', $barang['id'])->first();
@@ -234,7 +234,7 @@ class TransaksiController extends Controller
                 $dataBarang = $request->post('barang');
                 foreach ($dataBarang as $barang) {
                     $from = Inventory::where('barang_id', $barang['id'])->first();
-                    if ($from->stok >= $barang['qty']) {
+                    if ($from->stok < $barang['qty']) {
                         abort(400,'Stok Produk '.$barang['nama'].' tidak cukup!, Stok Barang Hanya tersedia '.$from->stok);
                     }
                     $inventory = Inventory::where('barang_id', $barang['id'])->first();
