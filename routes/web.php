@@ -123,6 +123,7 @@ Route::group(['middleware' => 'ceklogin'], function () {
 
     Route::controller(\App\Http\Controllers\LaporanController::class)->group(function () {
         Route::get('/laporan-transaksi', 'laporan_transaksi')->name('laporan_transaksi');
+        Route::get('/laporan-sales/{id}', 'laporan_sales');
     });
 });
 

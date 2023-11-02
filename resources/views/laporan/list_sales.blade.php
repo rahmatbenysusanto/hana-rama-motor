@@ -28,7 +28,7 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $s->nama }}</td>
                                     <td>
-                                        <a href="#" class="btn btn-primary">Detail Transaksi Sales</a>
+                                        <a href="/laporan-sales/{{ $s->id }}" class="btn btn-primary">Detail Transaksi Sales</a>
                                     </td>
                                 </tr>
                             @endforeach
