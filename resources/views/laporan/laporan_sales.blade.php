@@ -14,7 +14,7 @@
                                 <span class="fs-16">Target Penjualan</span>
                             </p>
                             <p class="mb-2 fs-12">
-                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">@currency(35000000)</span>
+                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">@currency($sales->target)</span>
                                 <span class="d-block fs-10 fw-semibold text-muted">Target Penjualan Bulanan</span>
                             </p>
                             <a href="javascript:void(0);" class="fs-12 mb-0 text-primary">Lihat Detail Pendapatan<i class="ti ti-chevron-right ms-1"></i></a>
@@ -82,10 +82,11 @@
     <div class="row">
         <div class="col-xl-12">
             <div class="card custom-card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between">
                     <div class="card-title">
-                        List Penjualan Barang
+                        List Penjualan Barang ( {{ $waktu }} )
                     </div>
+                    <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ubahTanggal">Ubah Tanggal Laporan</a>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -162,4 +163,33 @@
         </div>
     </div>
 
+    <div class="modal fade" id="ubahTanggal" tabindex="-1"
+         aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel1">Tanggal Laporan</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <form action="{{ route('laporan_sales_tanggal') }}" method="GET">
+                    <div class="modal-body">
+                        <input type="hidden" value="{{ $sales->id }}" name="sales_id">
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal Awal</label>
+                            <input type="date" class="form-control" name="awal" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal Akhir</label>
+                            <input type="date" class="form-control" name="akhir" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="/laporan-sales/{{ $sales->id }}" type="button" class="btn btn-secondary">Reset Tanggal</a>
+                        <button type="submit" class="btn btn-primary">Cari Data Transaksi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection

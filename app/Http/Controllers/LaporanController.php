@@ -52,7 +52,43 @@ class LaporanController extends Controller
 
         $transaksi = $dataTransaksi ?? [];
 
+        $waktu = tanggal_format(date('Y-m-d', time()));
+
         $title = "laporan transaksi";
-        return view('laporan.laporan_sales', compact('title', 'sales', 'totalPenjualan', 'jumlahTransaksi', 'piutang', 'transaksi'));
+        return view('laporan.laporan_sales', compact('title', 'sales', 'totalPenjualan', 'jumlahTransaksi', 'piutang', 'transaksi', 'waktu'));
+    }
+
+    public function laporan_sales_tanggal(Request $request)
+    {
+        $dataSales = Sales::where('id', $request->sales_id)->first();
+
+        $sales = $dataSales ?? [];
+
+        // Total Pendapatan Sales
+        $totalPenjualan = Transaksi::where('sales_id', $request->sales_id)->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])->sum('total_harga');
+
+        // Jumlah Transaksi
+        $jumlahTransaksi = Transaksi::where('sales_id', $request->sales_id)->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])->count();
+
+        // Piutang
+        $piutang = Transaksi::where('sales_id', $request->sales_id)
+            ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
+            ->where('tanggal_tempo', '!=', null)
+            ->where('status_pembayaran', 'Belum DiBayar')
+            ->sum('total_harga');
+
+        // List Transaksi
+        $dataTransaksi = Transaksi::with('sales', 'pelanggan', 'pembayaran')
+            ->where('sales_id', $request->sales_id)
+            ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
+            ->orderBy('tanggal_penjualan', 'DESC')
+            ->get();
+
+        $transaksi = $dataTransaksi ?? [];
+
+        $waktu = tanggal_format($request->awal) . " sampai " . tanggal_format($request->akhir);
+
+        $title = "laporan transaksi";
+        return view('laporan.laporan_sales', compact('title', 'sales', 'totalPenjualan', 'jumlahTransaksi', 'piutang', 'transaksi', 'waktu'));
     }
 }
