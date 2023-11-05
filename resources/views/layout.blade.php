@@ -363,6 +363,14 @@
 
                     <li class="slide__category"><span class="category-name">Lain - Lain</span></li>
                     <li class="slide">
+                        <a href="{{ route('absen') }}" class="side-menu__item {{ $title == "absen" ? "active" : "" }}">
+                            <div style="width: 20px;">
+                                <i class="fa-regular fa-person-to-door fa-lg"></i>
+                            </div>
+                            <span class="ms-3 side-menu__label">Absen Sales</span>
+                        </a>
+                    </li>
+                    <li class="slide">
                         <a href="{{ route('pelanggan') }}" class="side-menu__item {{ $title == "pelanggan" ? "active" : "" }}">
                             <div style="width: 20px;">
                                 <i class="fa-light fa-users fa-lg"></i>

@@ -126,5 +126,15 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::get('/laporan-sales/{id}', 'laporan_sales');
         Route::get('/laporan-sales', 'laporan_sales_tanggal')->name('laporan_sales_tanggal');
     });
+
+    Route::controller(\App\Http\Controllers\AbsenController::class)->group(function () {
+        Route::get('/absen-pegawai', 'absen')->name('absen');
+        Route::post('/buat-absen', 'buat_absen')->name('buat_absen');
+        Route::get('/lihat-absen/{pegawai_id}', 'lihat_absen');
+    });
+
+    Route::controller(\App\Http\Controllers\PegawaiController::class)->group(function () {
+        Route::post('/tambah-pegawai', 'tambah_pegawai')->name('tambah_pegawai');
+    });
 });
 

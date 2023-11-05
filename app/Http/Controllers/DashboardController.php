@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Inbound;
+use App\Models\InboundDetail;
 use App\Models\Inventory;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
