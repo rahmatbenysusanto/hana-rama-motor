@@ -10,9 +10,15 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
+    protected $commands = [
+        Commands\HitungGaji::class
+    ];
+
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // $schedule->command('inspire')->hourly();clear
+//        $schedule->command('hitung-gaji')->dailyAt('00.01');
+        $schedule->command('hitung-gaji')->everyMinute();
     }
 
     /**

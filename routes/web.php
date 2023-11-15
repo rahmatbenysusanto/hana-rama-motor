@@ -119,12 +119,20 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::post('/proses-pengembalian-barang', 'proses_pengembalian_barang_post')->name('proses_pengembalian_barang_post');
 
         Route::post('/proses-pembayaran', 'proses_pembayaran')->name('proses_pembayaran');
+
+        // Open Biaya Lainnya
+        Route::get('/biaya-lainnya', 'biayaLainnya')->name('biaya_lainnya');
+        Route::post('/tambah-biaya-lainnya', 'tambahBiayaLainnya')->name('tambah_pengeluaran');
+        // Close Biaya Lainnya
     });
 
     Route::controller(\App\Http\Controllers\LaporanController::class)->group(function () {
         Route::get('/laporan-transaksi', 'laporan_transaksi')->name('laporan_transaksi');
         Route::get('/laporan-sales/{id}', 'laporan_sales');
         Route::get('/laporan-sales', 'laporan_sales_tanggal')->name('laporan_sales_tanggal');
+
+        Route::get('/laporan-gaji-karyawan', 'laporan_gaji')->name('laporan_gaji');
+        Route::get('/lihat-pendapatan/{id}', 'lihat_pendapatan');
     });
 
     Route::controller(\App\Http\Controllers\AbsenController::class)->group(function () {

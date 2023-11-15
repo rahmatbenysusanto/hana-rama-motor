@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\BarangRusak;
+use App\Models\BiayaLainnya;
 use App\Models\Inbound;
 use App\Models\InboundDetail;
 use App\Models\Inventory;
@@ -629,5 +630,27 @@ class TransaksiController extends Controller
 
         $title = "buat transaksi alif";
         return view('outbound.buat_transaksi_alif', compact('title', 'pelanggan', 'sales', 'barang', 'pembayaran'));
+    }
+
+    public function biayaLainnya(): View
+    {
+        $sales = Sales::all();
+        $biayaLainnya = BiayaLainnya::with('sales')->get();
+
+        $title = "biaya lainnya";
+        return view("lain.biaya_lainnya", compact("title", "biayaLainnya", "sales"));
+    }
+
+    public function tambahBiayaLainnya(Request $request)
+    {
+        BiayaLainnya::create([
+            'sales_id'      => $request->post('sales'),
+            'tanggal'       => $request->post('tanggal'),
+            'nominal'       => $request->post('nominal'),
+            'keterangan'    => $request->post('keterangan')
+        ]);
+
+        Session::flash('success', 'Tambah Biaya Lainnya Berhasil');
+        return back();
     }
 }

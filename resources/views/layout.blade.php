@@ -349,16 +349,24 @@
                             <li class="slide {{ $title == "laporan transaksi" ? "active" : "" }}">
                                 <a href="{{ route('laporan_transaksi') }}" class="side-menu__item {{ $title == "laporan transaksi" ? "active" : "" }}">Laporan Transaksi</a>
                             </li>
-                            <li class="slide">
-                                <a href="#" class="side-menu__item">Laporan Oli</a>
-                            </li>
-                            <li class="slide">
-                                <a href="#" class="side-menu__item">Laporan Ban</a>
-                            </li>
-                            <li class="slide">
-                                <a href="#" class="side-menu__item">Laporan Sparepart</a>
-                            </li>
+{{--                            <li class="slide">--}}
+{{--                                <a href="#" class="side-menu__item">Laporan Oli</a>--}}
+{{--                            </li>--}}
+{{--                            <li class="slide">--}}
+{{--                                <a href="#" class="side-menu__item">Laporan Ban</a>--}}
+{{--                            </li>--}}
+{{--                            <li class="slide">--}}
+{{--                                <a href="#" class="side-menu__item">Laporan Sparepart</a>--}}
+{{--                            </li>--}}
                         </ul>
+                    </li>
+                    <li class="slide">
+                        <a href="{{ route('laporan_gaji') }}" class="side-menu__item {{ $title == "gaji" ? "active" : "" }}">
+                            <div style="width: 20px;">
+                                <i class="fa-regular fa-person-to-door fa-lg"></i>
+                            </div>
+                            <span class="ms-3 side-menu__label">Laporan Gaji Karyawan</span>
+                        </a>
                     </li>
 
                     <li class="slide__category"><span class="category-name">Lain - Lain</span></li>
@@ -395,11 +403,19 @@
                         </a>
                     </li>
                     <li class="slide">
-                        <a href="#" class="side-menu__item">
+                        <a href="{{ route('biaya_lainnya') }}" class="side-menu__item {{ $title == "biaya lainnya" ? "active" : "" }}">
                             <div style="width: 20px;">
                                 <i class="fa-regular fa-wallet fa-lg"></i>
                             </div>
                             <span class="ms-3 side-menu__label">Biaya Lainnya</span>
+                        </a>
+                    </li>
+                    <li class="slide">
+                        <a href="{{ route('biaya_lainnya') }}" class="side-menu__item {{ $title == "biaya lainnya" ? "active" : "" }}">
+                            <div style="width: 20px;">
+                                <i class="fa-regular fa-gear fa-lg"></i>
+                            </div>
+                            <span class="ms-3 side-menu__label">Pengaturan Gudang</span>
                         </a>
                     </li>
                 </ul>
