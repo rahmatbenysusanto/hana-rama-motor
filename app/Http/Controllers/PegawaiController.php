@@ -46,7 +46,7 @@ class PegawaiController extends Controller
                     ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
                     ->whereMonth('tanggal_penjualan', $bulan)
                     ->whereYear('tanggal_penjualan', $tahun)
-                    ->where('sales_id', $sales_id)
+                    ->where('transaksi.sales_id', $sales_id)
                     ->get();
 
                 $dataPendapatanBersih = 0;
@@ -56,6 +56,8 @@ class PegawaiController extends Controller
 
                 $pendapatanBersih = $pendapatanKotor - $dataPendapatanBersih;
 
+                Log::channel('gaji')->info($pendapatanKotor);
+                Log::channel('gaji')->info($dataPendapatanBersih);
                 Log::channel('gaji')->info('pendapatan bersih alip = ' . $pendapatanBersih);
                 break;
             case 3:
