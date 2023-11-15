@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
 use App\Models\Transaksi;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -30,9 +31,11 @@ class PegawaiController extends Controller
         switch ($sales_id) {
             case 2 :
                 // Hitung Gaji ALIP
+                $mulai = $tahun.'-'.Carbon::now()->subMonth()->month.'-20';
+                $selesai = $tahun.'-'.$bulan.'-20';
+
                 $pendapatanKotor = Transaksi::WhereMonth('tanggal_penjualan', $bulan)
-                    ->whereYear('tanggal_penjualan', $tahun)
-                    ->where('status_pembayaran', 'Lunas')
+                    ->whereBetween('tanggal_penjualan', [$mulai, $selesai])
                     ->where('sales_id', $sales_id)
                     ->sum('total_harga');
 
@@ -44,8 +47,7 @@ class PegawaiController extends Controller
                     ])
                     ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id','=', 'transaksi.id')
                     ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
-                    ->whereMonth('tanggal_penjualan', $bulan)
-                    ->whereYear('tanggal_penjualan', $tahun)
+                    ->whereBetween('tanggal_penjualan', [$mulai, $selesai])
                     ->where('transaksi.sales_id', $sales_id)
                     ->get();
 
