@@ -44,6 +44,34 @@
                                     <input type="number" class="form-control" placeholder="Target Penjualan" value="{{ $sales->target }}" name="target">
                                 </div>
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">Gaji Pokok</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1">Rp. </span>
+                                    <input type="number" class="form-control" placeholder="Target Penjualan" name="gaji" value="{{ $sales->gaji_pokok }}">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Uang Bensin</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1">Rp. </span>
+                                    <input type="number" class="form-control" value="{{ $sales->uang_bensin }}" name="uang_bensin">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Uang Makan</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1">Rp. </span>
+                                    <input type="number" class="form-control" value="{{ $sales->uang_makan }}" name="uang_makan">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Uang Kendaraan</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1">Rp. </span>
+                                    <input type="number" class="form-control" value="{{ $sales->sewa_kendaraan }}" name="sewa_kendaraan">
+                                </div>
+                            </div>
                             <div class="d-flex justify-content-end">
                                 <button type="submit" class="btn btn-primary">Edit Sales</button>
                             </div>

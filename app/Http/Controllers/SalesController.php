@@ -23,11 +23,15 @@ class SalesController extends Controller
     public function tambah_sales(Request $request)
     {
         Sales::create([
-            'nama'      => $request->post('nama'),
-            'no_hp'     => $request->post('no_hp'),
-            'type'      => $request->post('type'),
-            'nominal'   => $request->post('nominal'),
-            'target'    => $request->post('target')
+            'nama'          => $request->post('nama'),
+            'no_hp'         => $request->post('no_hp'),
+            'type'          => $request->post('type'),
+            'nominal'       => $request->post('nominal'),
+            'target'        => $request->post('target'),
+            'gaji_pokok'    => $request->post('gaji'),
+            'uang_bensin'   => $request->post('uang_bensin'),
+            'uang_makan'    => $request->post('uang_makan'),
+            'sewa_kendaraan'=> $request->post('sewa_kendaraan')
         ]);
 
         Session::flash('success', 'Tambah Sales Berhasil');
@@ -45,11 +49,15 @@ class SalesController extends Controller
     public function edit_sales(Request $request)
     {
         Sales::where('id', $request->post('id'))->update([
-            'nama'      => $request->post('nama'),
-            'no_hp'     => $request->post('no_hp'),
-            'type'      => $request->post('type'),
-            'nominal'   => $request->post('nominal'),
-            'target'    => $request->post('target')
+            'nama'          => $request->post('nama'),
+            'no_hp'         => $request->post('no_hp'),
+            'type'          => $request->post('type'),
+            'nominal'       => $request->post('nominal'),
+            'target'        => $request->post('target'),
+            'gaji_pokok'    => $request->post('gaji'),
+            'uang_bensin'   => $request->post('uang_bensin'),
+            'uang_makan'    => $request->post('uang_makan'),
+            'sewa_kendaraan'=> $request->post('sewa_kendaraan')
         ]);
 
         Session::flash('success', 'Edit Sales Berhasil');

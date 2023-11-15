@@ -98,6 +98,34 @@
                                 <input type="number" class="form-control" placeholder="Target Penjualan" name="target">
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Gaji Pokok</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">Rp. </span>
+                                <input type="number" class="form-control" placeholder="Target Penjualan" name="gaji">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Uang Bensin</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">Rp. </span>
+                                <input type="number" class="form-control" placeholder="Target Penjualan" name="uang_bensin">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Uang Makan</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">Rp. </span>
+                                <input type="number" class="form-control" placeholder="Target Penjualan" name="uang_makan">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Uang Kendaraan</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">Rp. </span>
+                                <input type="number" class="form-control" placeholder="Target Penjualan" name="sewa_kendaraan">
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>

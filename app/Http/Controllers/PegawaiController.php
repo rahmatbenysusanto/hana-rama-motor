@@ -58,6 +58,7 @@ class PegawaiController extends Controller
                 $pendapatanBersih = $pendapatanKotor - $dataPendapatanBersih;
                 break;
             case 3:
+
         }
     }
 }
