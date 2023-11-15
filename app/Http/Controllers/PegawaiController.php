@@ -34,6 +34,9 @@ class PegawaiController extends Controller
                 $mulai = $tahun.'-'.Carbon::now()->subMonth()->month.'-20';
                 $selesai = $tahun.'-'.$bulan.'-20';
 
+                Log::channel('gaji')->info('mulai = '. $mulai);
+                Log::channel('gaji')->info('selesai = '. $selesai);
+
                 $pendapatanKotor = Transaksi::WhereMonth('tanggal_penjualan', $bulan)
                     ->whereBetween('tanggal_penjualan', [$mulai, $selesai])
                     ->where('sales_id', $sales_id)
