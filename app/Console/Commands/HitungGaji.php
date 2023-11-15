@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\PegawaiController;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -41,6 +42,8 @@ class HitungGaji extends Command
 
         // Testing
         Log::channel('gaji')->info('perhitungan gaji testing');
+        $pegawai = new PegawaiController();
+        $pegawai->hitungGajiPegawai(2);
 
         $this->info('Hitung Gaji Otomatis');
     }
