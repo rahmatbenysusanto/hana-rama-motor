@@ -26,7 +26,8 @@ class SalesController extends Controller
             'nama'      => $request->post('nama'),
             'no_hp'     => $request->post('no_hp'),
             'type'      => $request->post('type'),
-            'nominal'   => $request->post('nominal')
+            'nominal'   => $request->post('nominal'),
+            'target'    => $request->post('target')
         ]);
 
         Session::flash('success', 'Tambah Sales Berhasil');
@@ -44,10 +45,11 @@ class SalesController extends Controller
     public function edit_sales(Request $request)
     {
         Sales::where('id', $request->post('id'))->update([
-            'nama'  => $request->post('nama'),
-            'no_hp' => $request->post('no_hp'),
+            'nama'      => $request->post('nama'),
+            'no_hp'     => $request->post('no_hp'),
             'type'      => $request->post('type'),
-            'nominal'   => $request->post('nominal')
+            'nominal'   => $request->post('nominal'),
+            'target'    => $request->post('target')
         ]);
 
         Session::flash('success', 'Edit Sales Berhasil');

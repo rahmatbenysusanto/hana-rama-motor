@@ -25,7 +25,7 @@ class PegawaiController extends Controller
 
     public function hitungGajiPegawai($sales_id)
     {
-        $bulan = date('d', time());
+        $bulan = date('m', time());
         $tahun = date('Y', time());
 
         switch ($sales_id) {
@@ -34,11 +34,7 @@ class PegawaiController extends Controller
                 $mulai = $tahun.'-'.Carbon::now()->subMonth()->month.'-20';
                 $selesai = $tahun.'-'.$bulan.'-20';
 
-                Log::channel('gaji')->info('mulai = '. $mulai);
-                Log::channel('gaji')->info('selesai = '. $selesai);
-
-                $pendapatanKotor = Transaksi::WhereMonth('tanggal_penjualan', $bulan)
-                    ->whereBetween('tanggal_penjualan', [$mulai, $selesai])
+                $pendapatanKotor = Transaksi::whereBetween('tanggal_penjualan', [$mulai, $selesai])
                     ->where('sales_id', $sales_id)
                     ->sum('total_harga');
 
@@ -60,10 +56,6 @@ class PegawaiController extends Controller
                 }
 
                 $pendapatanBersih = $pendapatanKotor - $dataPendapatanBersih;
-
-                Log::channel('gaji')->info($pendapatanKotor);
-                Log::channel('gaji')->info($dataPendapatanBersih);
-                Log::channel('gaji')->info('pendapatan bersih alip = ' . $pendapatanBersih);
                 break;
             case 3:
         }

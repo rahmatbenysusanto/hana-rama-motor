@@ -37,6 +37,13 @@
                                 <label class="form-label">Nonimal</label>
                                 <input type="number" name="nominal" class="form-control" value="{{ $sales->nominal }}">
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">Target Penjualan</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" id="basic-addon1">Rp. </span>
+                                    <input type="number" class="form-control" placeholder="Target Penjualan" value="{{ $sales->target }}" name="target">
+                                </div>
+                            </div>
                             <div class="d-flex justify-content-end">
                                 <button type="submit" class="btn btn-primary">Edit Sales</button>
                             </div>

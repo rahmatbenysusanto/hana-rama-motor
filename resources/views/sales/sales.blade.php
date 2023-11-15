@@ -22,7 +22,8 @@
                                 <th>Nama</th>
                                 <th>No HP</th>
                                 <th>Type</th>
-                                <th>Nonimal</th>
+                                <td>Nominal</td>
+                                <th>Target</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -33,7 +34,12 @@
                                     <td>{{ $s->nama }}</td>
                                     <td>{{ $s->no_hp }}</td>
                                     <td>{{ $s->type }}</td>
-                                    <td>{{ $s->nominal }}</td>
+                                    <td>
+                                        @if($s->nominal != null)
+                                            {{ $s->nominal }} %
+                                        @endif
+                                    </td>
+                                    <td>@currency($s->target)</td>
                                     <td>
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-primary btn-sm" style="border-radius: 0.25rem" data-bs-toggle="dropdown" aria-expanded="false">
@@ -84,6 +90,13 @@
                         <div class="mb-3">
                             <label class="form-label">Nominal</label>
                             <input type="number" name="nominal" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Target Penjualan</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">Rp. </span>
+                                <input type="number" class="form-control" placeholder="Target Penjualan" name="target">
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
