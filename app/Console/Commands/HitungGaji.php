@@ -29,22 +29,25 @@ class HitungGaji extends Command
     {
         // Perhitungan Gaji Otomatis
         $tanggal = date('d', time());
+        $tanggalAkhir = date('t', time());
+
+        $pegawai = new PegawaiController();
 
         // Sales ALIF & WAWAN
         if ($tanggal == 20) {
             Log::channel('gaji')->info('perhitungan gaji tanggal 20');
+            $pegawai->hitungGajiPegawai(2);
+            $pegawai->hitungGajiPegawai(16);
         }
 
-        // Sales BAGAS & YOGA
-        if ($tanggal == 1) {
+        // Sales BAGAS & YOGA & RAFIKA
+        if ($tanggal == $tanggalAkhir) {
             Log::channel('gaji')->info('perhitungan gaji tanggal 1');
+            $pegawai->hitungGajiPegawai(3);
+            $pegawai->hitungGajiPegawai(17);
+            $pegawai->hitungGajiPegawai(18);
         }
-
-        // Testing
-        Log::channel('gaji')->info('perhitungan gaji testing');
-        $pegawai = new PegawaiController();
-        $pegawai->hitungGajiPegawai(3);
-
+        
         $this->info('Hitung Gaji Otomatis');
     }
 }
