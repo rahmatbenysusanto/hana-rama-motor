@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pegawai;
 use App\Models\RekapGaji;
 use App\Models\Sales;
 use App\Models\Transaksi;
@@ -96,7 +95,7 @@ class LaporanController extends Controller
 
     public function laporan_gaji(): View
     {
-        $dataSales = Pegawai::all();
+        $dataSales = Sales::where('status', 'pegawai')->get();
 
         $sales = $dataSales ?? [];
 

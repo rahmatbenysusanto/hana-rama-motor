@@ -162,6 +162,128 @@ class PegawaiController extends Controller
                     'keterangan'        => 'Gaji Bulan '. date('M', time()).', total masuk dalam 1 bulan = '.$dataAbsenMasuk.', tidak masuk = '.$dataAbsenTidakMasuk,
                     'tanggal'           => date('Y-m-d H:i:s', time())
                 ]);
+                break;
+            case 16:
+                // Gaji Wawan
+                if (date('m', time()) == 01 || date('m', time()) == '01') {
+                    $tahunMulai = Carbon::now()->subYear()->year;
+                } else {
+                    $tahunMulai = date('Y', time());
+                }
+
+                $dataAbsenMasuk = Absen::where('pegawai_id', $sales_id)
+                    ->where('absen', 'masuk')
+                    ->whereBetween('tanggal_absen', [$tahunMulai.'-'.Carbon::now()->subMonth()->month.'-20', $tahun.'-'.$bulan.'-19'])
+                    ->count();
+
+                $dataAbsenTidakMasuk = Absen::where('pegawai_id', $sales_id)
+                    ->where('absen', 'tidak masuk')
+                    ->whereBetween('tanggal_absen', [$tahunMulai.'-'.Carbon::now()->subMonth()->month.'-20', $tahun.'-'.$bulan.'-19'])
+                    ->count();
+
+                $dataSales = Sales::where('id', $sales_id)->first();
+
+                $potonganTidakMasuk = $dataAbsenTidakMasuk * 70000;
+
+                $gajiBersih = $dataSales->gaji_pokok - $potonganTidakMasuk;
+
+                // Insert Rekap Gaji
+                RekapGaji::create([
+                    'sales_id'          => $sales_id,
+                    'gaji_pokok'        => $dataSales->gaji_pokok,
+                    'uang_makan'        => 0,
+                    'uang_bensin'       => 0,
+                    'sewa_kendaraan'    => 0,
+                    'operasional'       => 0,
+                    'kas_bon'           => 0,
+                    'potongan'          => $potonganTidakMasuk,
+                    'total_penjualan'   => 0,
+                    'bonus_penjualan'   => 0,
+                    'gaji_bersih'       => $gajiBersih,
+                    'keterangan'        => 'Gaji Bulan '. date('M', time()).', total masuk dalam 1 bulan = '.$dataAbsenMasuk.', tidak masuk = '.$dataAbsenTidakMasuk,
+                    'tanggal'           => date('Y-m-d H:i:s', time())
+                ]);
+                break;
+            case 17:
+                // Gaji Yoga
+                if (date('m', time()) == 01 || date('m', time()) == '01') {
+                    $tahun = Carbon::now()->subYear()->year;
+                }
+
+                $dataAbsenMasuk = Absen::where('pegawai_id', $sales_id)
+                    ->where('absen', 'masuk')
+                    ->WhereMonth('tanggal_absen', $bulan)
+                    ->whereYear('tanggal_absen', $tahun)
+                    ->count();
+
+                $dataAbsenTidakMasuk = Absen::where('pegawai_id', $sales_id)
+                    ->where('absen', 'tidak masuk')
+                    ->WhereMonth('tanggal_absen', $bulan)
+                    ->whereYear('tanggal_absen', $tahun)
+                    ->count();
+
+                $dataSales = Sales::where('id', $sales_id)->first();
+
+                $potonganTidakMasuk = $dataAbsenTidakMasuk * 70000;
+
+                $gajiBersih = $dataSales->gaji_pokok - $potonganTidakMasuk;
+
+                // Insert Rekap Gaji
+                RekapGaji::create([
+                    'sales_id'          => $sales_id,
+                    'gaji_pokok'        => $dataSales->gaji_pokok,
+                    'uang_makan'        => 0,
+                    'uang_bensin'       => 0,
+                    'sewa_kendaraan'    => 0,
+                    'operasional'       => 0,
+                    'kas_bon'           => 0,
+                    'potongan'          => $potonganTidakMasuk,
+                    'total_penjualan'   => 0,
+                    'bonus_penjualan'   => 0,
+                    'gaji_bersih'       => $gajiBersih,
+                    'keterangan'        => 'Gaji Bulan '. date('M', time()).', total masuk dalam 1 bulan = '.$dataAbsenMasuk.', tidak masuk = '.$dataAbsenTidakMasuk,
+                    'tanggal'           => date('Y-m-d H:i:s', time())
+                ]);
+                break;
+            case 18:
+                // Gaji Rafika
+                if (date('m', time()) == 01 || date('m', time()) == '01') {
+                    $tahun = Carbon::now()->subYear()->year;
+                }
+
+                $dataAbsenMasuk = Absen::where('pegawai_id', $sales_id)
+                    ->where('absen', 'masuk')
+                    ->WhereMonth('tanggal_absen', $bulan)
+                    ->whereYear('tanggal_absen', $tahun)
+                    ->count();
+
+                $dataAbsenTidakMasuk = Absen::where('pegawai_id', $sales_id)
+                    ->where('absen', 'tidak masuk')
+                    ->WhereMonth('tanggal_absen', $bulan)
+                    ->whereYear('tanggal_absen', $tahun)
+                    ->count();
+
+                $dataSales = Sales::where('id', $sales_id)->first();
+
+                $gajiBersih = $dataSales->gaji_pokok;
+
+                // Insert Rekap Gaji
+                RekapGaji::create([
+                    'sales_id'          => $sales_id,
+                    'gaji_pokok'        => $dataSales->gaji_pokok,
+                    'uang_makan'        => 0,
+                    'uang_bensin'       => 0,
+                    'sewa_kendaraan'    => 0,
+                    'operasional'       => 0,
+                    'kas_bon'           => 0,
+                    'potongan'          => 0,
+                    'total_penjualan'   => 0,
+                    'bonus_penjualan'   => 0,
+                    'gaji_bersih'       => $gajiBersih,
+                    'keterangan'        => 'Gaji Bulan '. date('M', time()).', total masuk dalam 1 bulan = '.$dataAbsenMasuk.', tidak masuk = '.$dataAbsenTidakMasuk,
+                    'tanggal'           => date('Y-m-d H:i:s', time())
+                ]);
+                break;
         }
     }
 }
