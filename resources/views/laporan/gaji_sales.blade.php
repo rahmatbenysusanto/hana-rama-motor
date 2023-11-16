@@ -100,12 +100,12 @@
                                     <th>Sewa Kendaraan</th>
                                     <th>Operasional</th>
                                     <th>Kas Bon</th>
+                                    <th>Potongan</th>
                                     <th>Total Penjualan</th>
                                     <th>Bonus Penjualan</th>
                                     <th>Gaji Bersih</th>
                                     <th>Keterangan</th>
                                     <th>Tanggal</th>
-                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -113,6 +113,17 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>@currency($gaji->gaji_pokok)</td>
+                                        <td>@currency($gaji->uang_bensin)</td>
+                                        <td>@currency($gaji->uang_makan)</td>
+                                        <td>@currency($gaji->sewa_kendaraan)</td>
+                                        <td>@currency($gaji->operasional)</td>
+                                        <td>@currency($gaji->kas_bon)</td>
+                                        <td>@currency($gaji->potongan)</td>
+                                        <td>@currency($gaji->total_penjualan)</td>
+                                        <td>@currency($gaji->bonus_penjualan)</td>
+                                        <td>@currency($gaji->gaji_bersih)</td>
+                                        <td>{{ $gaji->keterangan }}</td>
+                                        <td>{{ tanggal_format($gaji->tanggal) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
