@@ -47,7 +47,9 @@ class HitungGaji extends Command
             $pegawai->hitungGajiPegawai(17);
             $pegawai->hitungGajiPegawai(18);
         }
-        
+
+        Log::channel('gaji')->notice('Cron Job dijalankan '.date('d M Y H:i:s', time()));
+
         $this->info('Hitung Gaji Otomatis');
     }
 }
