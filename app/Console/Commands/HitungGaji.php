@@ -43,7 +43,7 @@ class HitungGaji extends Command
         // Testing
         Log::channel('gaji')->info('perhitungan gaji testing');
         $pegawai = new PegawaiController();
-        $pegawai->hitungGajiPegawai(2);
+        $pegawai->hitungGajiPegawai(3);
 
         $this->info('Hitung Gaji Otomatis');
     }
