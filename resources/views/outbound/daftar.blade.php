@@ -25,6 +25,7 @@
                                 <th>Jumlah Barang</th>
                                 <th>Total QTY</th>
                                 <th>Total Harga</th>
+                                <th>Cicilan</th>
                                 <th>Status</th>
                                 <th>Status Pembayaran</th>
                                 <th>Tanggal Penjualan</th>
@@ -43,6 +44,7 @@
                                         <td>{{ $tra->jumlah_barang }}</td>
                                         <td>{{ $tra->qty }}</td>
                                         <td>@currency($tra->total_harga)</td>
+                                        <td>@currency($tra->cicilan)</td>
                                         <td>
                                             @if($tra->status == "penjualan")
                                                 <span class="badge bg-success-transparent">Normal</span>

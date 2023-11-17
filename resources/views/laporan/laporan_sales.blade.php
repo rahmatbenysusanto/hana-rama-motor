@@ -101,6 +101,7 @@
                                 <th>Jumlah Barang</th>
                                 <th>Total QTY</th>
                                 <th>Total Harga</th>
+                                <th>Cicilan</th>
                                 <th>Status</th>
                                 <th>Status Pembayaran</th>
                                 <th>Tanggal Penjualan</th>
@@ -119,6 +120,7 @@
                                     <td>{{ $tra->jumlah_barang }}</td>
                                     <td>{{ $tra->qty }}</td>
                                     <td>@currency($tra->total_harga)</td>
+                                    <td>@currency($tra->cicilan)</td>
                                     <td>
                                         @if($tra->status == "penjualan")
                                             <span class="badge bg-success-transparent">Normal</span>
@@ -129,10 +131,16 @@
                                         @if($tra->tanggal_tempo != null)
                                             <span class="badge bg-danger-transparent">Tempo</span>
                                         @endif
+
+                                        @if($tra->cicilan != null)
+                                            <br><span class="badge bg-warning-transparent mt-1">Cicilan</span>
+                                        @endif
                                     </td>
                                     <td>
                                         @if($tra->status_pembayaran == "Lunas")
                                             <span class="badge bg-success-transparent">Lunas</span>
+                                        @elseif($tra->cicilan != null)
+                                            <span class="badge bg-warning-transparent">Cicilan</span>
                                         @else
                                             <span class="badge bg-danger-transparent">Belum Bayar</span>
                                         @endif
