@@ -53,10 +53,16 @@
                                             @if($tra->tanggal_tempo != null)
                                                     <span class="badge bg-danger-transparent">Tempo</span>
                                             @endif
+
+                                            @if($tra->cicilan != null)
+                                                    <br><span class="badge bg-warning-transparent mt-1">Cicilan</span>
+                                            @endif
                                         </td>
                                         <td>
                                             @if($tra->status_pembayaran == "Lunas")
                                                 <span class="badge bg-success-transparent">Lunas</span>
+                                            @elseif($tra->cicilan != null)
+                                                <span class="badge bg-warning-transparent">Cicilan</span>
                                             @else
                                                 <span class="badge bg-danger-transparent">Belum Bayar</span>
                                             @endif
@@ -78,6 +84,9 @@
                                                     @if($tra->status_pembayaran == "Belum DiBayar")
                                                         <li><a class="dropdown-item" onclick="bayarTransaksi('{{ $tra->id }}')">Bayar Transaksi</a></li>
                                                     @endif
+                                                    @if($tra->status_pembayaran == "Belum DiBayar" || $tra->cicilan != null)
+                                                        <li><a class="dropdown-item" onclick="bayarCicil('{{ $tra->id }}', '{{ $tra->no_invoice }}')">Bayar Cicil</a></li>
+                                                    @endif
                                                     <li><a class="dropdown-item" target="_blank" href="/cetak-nota-transaksi/{{ $tra->id }}">Cetak Nota</a></li>
                                                 </ul>
                                             </div>
@@ -88,6 +97,38 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="bayar_cicil" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="{{ route('bayar_cicilan') }}" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="bayar_cicil_title"></h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="transaksi_id" id="transaksi_id">
+                        <div class="mb-3">
+                            <label class="form-label">Nominal</label>
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">Rp. </span>
+                                <input type="number" class="form-control" name="jumlah" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal</label>
+                            <input type="date" class="form-control" name="tanggal" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -144,6 +185,12 @@
                     )
                 }
             });
+        }
+
+        function bayarCicil(transaksi_id, noInvoice) {
+            document.getElementById('bayar_cicil_title').innerText = "Pembayaran Cicilan " + noInvoice;
+            document.getElementById('transaksi_id').value = transaksi_id;
+            $("#bayar_cicil").modal('show');
         }
     </script>
 @endsection

@@ -124,6 +124,8 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::get('/biaya-lainnya', 'biayaLainnya')->name('biaya_lainnya');
         Route::post('/tambah-biaya-lainnya', 'tambahBiayaLainnya')->name('tambah_pengeluaran');
         // Close Biaya Lainnya
+
+        Route::post('/bayar-cicilan', 'bayarCicilan')->name('bayar_cicilan');
     });
 
     Route::controller(\App\Http\Controllers\LaporanController::class)->group(function () {

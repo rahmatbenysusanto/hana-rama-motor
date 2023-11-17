@@ -12,6 +12,7 @@ use App\Models\InventoryDetail;
 use App\Models\Kategori;
 use App\Models\Pelanggan;
 use App\Models\Pembayaran;
+use App\Models\PembayaranCicilan;
 use App\Models\Sales;
 use App\Models\Sampel;
 use App\Models\SampelDetail;
@@ -652,5 +653,44 @@ class TransaksiController extends Controller
 
         Session::flash('success', 'Tambah Biaya Lainnya Berhasil');
         return back();
+    }
+
+    public function bayarCicilan(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            PembayaranCicilan::create([
+                'transaksi_id'   => $request->post('transaksi_id'),
+                'jumlah'         => $request->post('jumlah'),
+                'tanggal'        => $request->post('tanggal'),
+            ]);
+
+            $dataTransaksi = Transaksi::where('id', $request->post('transaksi_id'))->first();
+            if ($dataTransaksi->cicilan != null) {
+                Transaksi::where('id', $request->post('transaksi_id'))->increment('cicilan', (int)$request->post('jumlah'));
+            } else {
+                Transaksi::where('id', $request->post('transaksi_id'))->update([
+                    'cicilan'     => $request->post('jumlah')
+                ]);
+            }
+
+            $transaksi = Transaksi::where('id', $request->post('transaksi_id'))->first();
+            if ($transaksi->total_harga == $transaksi->cicilan) {
+                Transaksi::where('id', $request->post('transaksi_id'))->update([
+                    'status_pembayaran'     => 'Lunas'
+                ]);
+            } else {
+                abort(400, 'Nominal melebihi total transaksi');
+            }
+
+            DB::commit();
+
+            Session::flash('success', 'Pembayaran Cicilan Berhasil di buat');
+            return back();
+        } catch (\Exception $err) {
+            DB::rollBack();
+            Session::flash('error', 'Pembayaran Cicilan Gagal di buat '. $err->getMessage());
+            return back();
+        }
     }
 }

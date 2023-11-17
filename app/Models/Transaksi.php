@@ -9,7 +9,7 @@ class Transaksi extends Model
 {
     use HasFactory;
     protected $table = "transaksi";
-    protected $fillable = ["pelanggan_id", "sales_id", "diskon", "pembayaran_id", "no_invoice", "harga_diskon", "biaya_lain", "total_harga", "status", "tanggal_penjualan", "tanggal_tempo", "jumlah_barang", "qty", "status_pembayaran"];
+    protected $fillable = ["cicilan", "pelanggan_id", "sales_id", "diskon", "pembayaran_id", "no_invoice", "harga_diskon", "biaya_lain", "total_harga", "status", "tanggal_penjualan", "tanggal_tempo", "jumlah_barang", "qty", "status_pembayaran"];
 
     public function sales(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
