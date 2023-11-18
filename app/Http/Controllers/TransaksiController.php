@@ -679,7 +679,9 @@ class TransaksiController extends Controller
                 Transaksi::where('id', $request->post('transaksi_id'))->update([
                     'status_pembayaran'     => 'Lunas'
                 ]);
-            } else {
+            }
+
+            if ($transaksi->total_harga < $transaksi->cicilan) {
                 abort(400, 'Nominal melebihi total transaksi');
             }
 
