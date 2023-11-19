@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\RekapGaji;
 use App\Models\Sales;
 use App\Models\Transaksi;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class LaporanController extends Controller
@@ -144,5 +146,400 @@ class LaporanController extends Controller
         $title = "gaji";
 
         return view('laporan.gaji_sales', compact("title", 'sales', 'totalPenjualan', 'jumlahTransaksi', 'piutang', 'transaksi', 'waktu', 'rekapGaji'));
+    }
+
+    public function laporanOli(): View
+    {
+        $transaksi = DB::table('transaksi')
+            ->select([
+                'transaksi.id as transaksi_id',
+                'transaksi.no_invoice',
+                'transaksi.diskon',
+                'transaksi.tanggal_penjualan',
+                'transaksi_detail.total_harga',
+                'transaksi_detail.qty',
+                'transaksi.tanggal_tempo',
+                'transaksi.status_pembayaran',
+                'transaksi.cicilan',
+                'barang.nama_barang',
+                'barang.sku',
+                'sales.nama as nama_sales',
+                'pelanggan.nama as nama_pelanggan',
+                'inventory_detail.harga'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->leftJoin('sales', 'sales.id', '=', 'transaksi.sales_id')
+            ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
+            ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+            ->where('barang.kategori_id', 1)
+            ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
+            ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
+            ->get();
+
+        $listTransaksi = [];
+        $totalPenjualan = 0;
+        $totalPendapatanBersih = 0;
+        $totalPenjualanKotor = 0;
+        $totalPenjualanTempo = 0;
+
+        foreach ($transaksi as $tra) {
+            $listTransaksi[] = [
+                'no_invoice'    => $tra->no_invoice,
+                'nama_barang'   => $tra->nama_barang,
+                'sku'           => $tra->sku,
+                'sales'         => $tra->nama_sales,
+                'pelanggan'     => $tra->nama_pelanggan,
+                'qty'           => $tra->qty,
+                'harga'         => $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100)),
+                'tanggal'       => $tra->tanggal_penjualan
+            ];
+
+            $totalPenjualan+= $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+            if ($tra->status_pembayaran == "Lunas") {
+                $totalPenjualanKotor += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            } else {
+                $totalPenjualanTempo += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            }
+
+            if ($tra->cicilan != null) {
+                $totalPenjualanKotor += $tra->cicilan;
+            }
+
+            $totalPendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
+        $title = "laporan oli";
+        return view('laporan.laporan_oli', compact("title", "listTransaksi", "totalPenjualan", "totalPendapatanBersih", "totalPenjualanKotor", "totalPenjualanTempo"));
+    }
+
+    public function laporanBan(): View
+    {
+        $transaksi = DB::table('transaksi')
+            ->select([
+                'transaksi.id as transaksi_id',
+                'transaksi.no_invoice',
+                'transaksi.diskon',
+                'transaksi.tanggal_penjualan',
+                'transaksi_detail.total_harga',
+                'transaksi_detail.qty',
+                'transaksi.tanggal_tempo',
+                'transaksi.status_pembayaran',
+                'transaksi.cicilan',
+                'barang.nama_barang',
+                'barang.sku',
+                'sales.nama as nama_sales',
+                'pelanggan.nama as nama_pelanggan',
+                'inventory_detail.harga'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->leftJoin('sales', 'sales.id', '=', 'transaksi.sales_id')
+            ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
+            ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+            ->where('barang.kategori_id', 2)
+            ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
+            ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
+            ->get();
+
+        $listTransaksi = [];
+        $totalPenjualan = 0;
+        $totalPendapatanBersih = 0;
+        $totalPenjualanKotor = 0;
+        $totalPenjualanTempo = 0;
+
+        foreach ($transaksi as $tra) {
+            $listTransaksi[] = [
+                'no_invoice'    => $tra->no_invoice,
+                'nama_barang'   => $tra->nama_barang,
+                'sku'           => $tra->sku,
+                'sales'         => $tra->nama_sales,
+                'pelanggan'     => $tra->nama_pelanggan,
+                'qty'           => $tra->qty,
+                'harga'         => $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100)),
+                'tanggal'       => $tra->tanggal_penjualan
+            ];
+
+            $totalPenjualan+= $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+            if ($tra->status_pembayaran == "Lunas") {
+                $totalPenjualanKotor += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            } else {
+                $totalPenjualanTempo += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            }
+
+            if ($tra->cicilan != null) {
+                $totalPenjualanKotor += $tra->cicilan;
+            }
+
+            $totalPendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
+        $title = "laporan ban";
+        return view('laporan.laporan_ban', compact("title", "listTransaksi", "totalPenjualan", "totalPendapatanBersih", "totalPenjualanKotor", "totalPenjualanTempo"));
+    }
+
+    public function laporanSparepart(): View
+    {        $transaksi = DB::table('transaksi')
+        ->select([
+            'transaksi.id as transaksi_id',
+            'transaksi.no_invoice',
+            'transaksi.diskon',
+            'transaksi.tanggal_penjualan',
+            'transaksi_detail.total_harga',
+            'transaksi_detail.qty',
+            'transaksi.tanggal_tempo',
+            'transaksi.status_pembayaran',
+            'transaksi.cicilan',
+            'barang.nama_barang',
+            'barang.sku',
+            'sales.nama as nama_sales',
+            'pelanggan.nama as nama_pelanggan',
+            'inventory_detail.harga'
+        ])
+        ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+        ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+        ->leftJoin('sales', 'sales.id', '=', 'transaksi.sales_id')
+        ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
+        ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+        ->where('barang.kategori_id', 3)
+        ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
+        ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
+        ->get();
+
+        $listTransaksi = [];
+        $totalPenjualan = 0;
+        $totalPendapatanBersih = 0;
+        $totalPenjualanKotor = 0;
+        $totalPenjualanTempo = 0;
+
+        foreach ($transaksi as $tra) {
+            $listTransaksi[] = [
+                'no_invoice'    => $tra->no_invoice,
+                'nama_barang'   => $tra->nama_barang,
+                'sku'           => $tra->sku,
+                'sales'         => $tra->nama_sales,
+                'pelanggan'     => $tra->nama_pelanggan,
+                'qty'           => $tra->qty,
+                'harga'         => $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100)),
+                'tanggal'       => $tra->tanggal_penjualan
+            ];
+
+            $totalPenjualan+= $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+            if ($tra->status_pembayaran == "Lunas") {
+                $totalPenjualanKotor += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            } else {
+                $totalPenjualanTempo += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            }
+
+            if ($tra->cicilan != null) {
+                $totalPenjualanKotor += $tra->cicilan;
+            }
+
+            $totalPendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
+        $title = "laporan sparepart";
+        return view('laporan.laporan_sparepart', compact("title", "listTransaksi", "totalPenjualan", "totalPendapatanBersih", "totalPenjualanKotor", "totalPenjualanTempo"));
+    }
+
+    public function laporanOliTanggal(Request $request): View
+    {
+        $transaksi = DB::table('transaksi')
+            ->select([
+                'transaksi.id as transaksi_id',
+                'transaksi.no_invoice',
+                'transaksi.diskon',
+                'transaksi.tanggal_penjualan',
+                'transaksi_detail.total_harga',
+                'transaksi_detail.qty',
+                'transaksi.tanggal_tempo',
+                'transaksi.status_pembayaran',
+                'transaksi.cicilan',
+                'barang.nama_barang',
+                'barang.sku',
+                'sales.nama as nama_sales',
+                'pelanggan.nama as nama_pelanggan',
+                'inventory_detail.harga'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->leftJoin('sales', 'sales.id', '=', 'transaksi.sales_id')
+            ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
+            ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+            ->where('barang.kategori_id', 1)
+            ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
+            ->orderBy('transaksi.tanggal_penjualan', 'DESC')
+            ->get();
+
+        $listTransaksi = [];
+        $totalPenjualan = 0;
+        $totalPendapatanBersih = 0;
+        $totalPenjualanKotor = 0;
+        $totalPenjualanTempo = 0;
+
+        foreach ($transaksi as $tra) {
+            $listTransaksi[] = [
+                'no_invoice'    => $tra->no_invoice,
+                'nama_barang'   => $tra->nama_barang,
+                'sku'           => $tra->sku,
+                'sales'         => $tra->nama_sales,
+                'pelanggan'     => $tra->nama_pelanggan,
+                'qty'           => $tra->qty,
+                'harga'         => $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100)),
+                'tanggal'       => $tra->tanggal_penjualan
+            ];
+
+            $totalPenjualan+= $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+            if ($tra->status_pembayaran == "Lunas") {
+                $totalPenjualanKotor += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            } else {
+                $totalPenjualanTempo += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            }
+
+            if ($tra->cicilan != null) {
+                $totalPenjualanKotor += $tra->cicilan;
+            }
+
+            $totalPendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
+        $title = "laporan oli";
+        return view('laporan.laporan_oli', compact("title", "listTransaksi", "totalPenjualan", "totalPendapatanBersih", "totalPenjualanKotor", "totalPenjualanTempo"));
+    }
+
+    public function laporanBanTanggal(Request $request): View
+    {
+        $transaksi = DB::table('transaksi')
+            ->select([
+                'transaksi.id as transaksi_id',
+                'transaksi.no_invoice',
+                'transaksi.diskon',
+                'transaksi.tanggal_penjualan',
+                'transaksi_detail.total_harga',
+                'transaksi_detail.qty',
+                'transaksi.tanggal_tempo',
+                'transaksi.status_pembayaran',
+                'transaksi.cicilan',
+                'barang.nama_barang',
+                'barang.sku',
+                'sales.nama as nama_sales',
+                'pelanggan.nama as nama_pelanggan',
+                'inventory_detail.harga'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->leftJoin('sales', 'sales.id', '=', 'transaksi.sales_id')
+            ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
+            ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+            ->where('barang.kategori_id', 2)
+            ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
+            ->orderBy('transaksi.tanggal_penjualan', 'DESC')
+            ->get();
+
+        $listTransaksi = [];
+        $totalPenjualan = 0;
+        $totalPendapatanBersih = 0;
+        $totalPenjualanKotor = 0;
+        $totalPenjualanTempo = 0;
+
+        foreach ($transaksi as $tra) {
+            $listTransaksi[] = [
+                'no_invoice'    => $tra->no_invoice,
+                'nama_barang'   => $tra->nama_barang,
+                'sku'           => $tra->sku,
+                'sales'         => $tra->nama_sales,
+                'pelanggan'     => $tra->nama_pelanggan,
+                'qty'           => $tra->qty,
+                'harga'         => $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100)),
+                'tanggal'       => $tra->tanggal_penjualan
+            ];
+
+            $totalPenjualan+= $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+            if ($tra->status_pembayaran == "Lunas") {
+                $totalPenjualanKotor += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            } else {
+                $totalPenjualanTempo += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            }
+
+            if ($tra->cicilan != null) {
+                $totalPenjualanKotor += $tra->cicilan;
+            }
+
+            $totalPendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
+        $title = "laporan ban";
+        return view('laporan.laporan_ban', compact("title", "listTransaksi", "totalPenjualan", "totalPendapatanBersih", "totalPenjualanKotor", "totalPenjualanTempo"));
+    }
+
+    public function laporanSparepartTanggal(Request $request): View
+    {
+        $transaksi = DB::table('transaksi')
+            ->select([
+                'transaksi.id as transaksi_id',
+                'transaksi.no_invoice',
+                'transaksi.diskon',
+                'transaksi.tanggal_penjualan',
+                'transaksi_detail.total_harga',
+                'transaksi_detail.qty',
+                'transaksi.tanggal_tempo',
+                'transaksi.status_pembayaran',
+                'transaksi.cicilan',
+                'barang.nama_barang',
+                'barang.sku',
+                'sales.nama as nama_sales',
+                'pelanggan.nama as nama_pelanggan',
+                'inventory_detail.harga'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->leftJoin('sales', 'sales.id', '=', 'transaksi.sales_id')
+            ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
+            ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+            ->where('barang.kategori_id', 3)
+            ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
+            ->orderBy('transaksi.tanggal_penjualan', 'DESC')
+            ->get();
+
+        $listTransaksi = [];
+        $totalPenjualan = 0;
+        $totalPendapatanBersih = 0;
+        $totalPenjualanKotor = 0;
+        $totalPenjualanTempo = 0;
+
+        foreach ($transaksi as $tra) {
+            $listTransaksi[] = [
+                'no_invoice'    => $tra->no_invoice,
+                'nama_barang'   => $tra->nama_barang,
+                'sku'           => $tra->sku,
+                'sales'         => $tra->nama_sales,
+                'pelanggan'     => $tra->nama_pelanggan,
+                'qty'           => $tra->qty,
+                'harga'         => $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100)),
+                'tanggal'       => $tra->tanggal_penjualan
+            ];
+
+            $totalPenjualan+= $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+            if ($tra->status_pembayaran == "Lunas") {
+                $totalPenjualanKotor += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            } else {
+                $totalPenjualanTempo += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            }
+
+            if ($tra->cicilan != null) {
+                $totalPenjualanKotor += $tra->cicilan;
+            }
+
+            $totalPendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
+        $title = "laporan sparepart";
+        return view('laporan.laporan_sparepart', compact("title", "listTransaksi", "totalPenjualan", "totalPendapatanBersih", "totalPenjualanKotor", "totalPenjualanTempo"));
     }
 }

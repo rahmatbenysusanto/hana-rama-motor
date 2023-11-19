@@ -135,6 +135,14 @@ Route::group(['middleware' => 'ceklogin'], function () {
 
         Route::get('/laporan-gaji-karyawan', 'laporan_gaji')->name('laporan_gaji');
         Route::get('/lihat-pendapatan/{id}', 'lihat_pendapatan');
+
+        Route::get('/laporan-oli', 'laporanOli')->name('laporanOli');
+        Route::get('/laporan-ban', 'laporanBan')->name('laporanBan');
+        Route::get('/laporan-sparepart', 'laporanSparepart')->name('laporanSparepart');
+
+        Route::get('/laporan-oli-tanggal', 'laporanOliTanggal')->name('laporanOliTanggal');
+        Route::get('/laporan-ban-tanggal', 'laporanBanTanggal')->name('laporanBanTanggal');
+        Route::get('/laporan-sparepart-tanggal', 'laporanSparepartTanggal')->name('laporanSparepartTanggal');
     });
 
     Route::controller(\App\Http\Controllers\AbsenController::class)->group(function () {

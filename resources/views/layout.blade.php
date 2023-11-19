@@ -335,7 +335,7 @@
                     </li>
 
                     <li class="slide__category"><span class="category-name">Laporan</span></li>
-                    <li class="slide has-sub {{ $title == "laporan transaksi" ? "open" : "" }}">
+                    <li class="slide has-sub {{ $title == "laporan transaksi" || $title == "laporan oli" || $title == "laporan ban" || $title == "laporan sparepart" ? "open" : "" }}">
                         <a href="javascript:void(0);" class="side-menu__item">
                             <div  style="width: 20px;">
                                 <i class="fa-regular fa-calendar-lines fa-lg"></i>
@@ -349,15 +349,15 @@
                             <li class="slide {{ $title == "laporan transaksi" ? "active" : "" }}">
                                 <a href="{{ route('laporan_transaksi') }}" class="side-menu__item {{ $title == "laporan transaksi" ? "active" : "" }}">Laporan Transaksi</a>
                             </li>
-{{--                            <li class="slide">--}}
-{{--                                <a href="#" class="side-menu__item">Laporan Oli</a>--}}
-{{--                            </li>--}}
-{{--                            <li class="slide">--}}
-{{--                                <a href="#" class="side-menu__item">Laporan Ban</a>--}}
-{{--                            </li>--}}
-{{--                            <li class="slide">--}}
-{{--                                <a href="#" class="side-menu__item">Laporan Sparepart</a>--}}
-{{--                            </li>--}}
+                            <li class="slide {{ $title == "laporan oli" ? "active" : "" }}">
+                                <a href="{{ route('laporanOli') }}" class="side-menu__item {{ $title == "laporan oli" ? "active" : "" }}">Laporan Oli</a>
+                            </li>
+                            <li class="slide {{ $title == "laporan ban" ? "active" : "" }}">
+                                <a href="{{ route('laporanBan') }}" class="side-menu__item {{ $title == "laporan ban" ? "active" : "" }}">Laporan Ban</a>
+                            </li>
+                            <li class="slide {{ $title == "laporan sparepart" ? "active" : "" }}">
+                                <a href="{{ route('laporanSparepart') }}" class="side-menu__item {{ $title == "laporan sparepart" ? "active" : "" }}">Laporan Sparepart</a>
+                            </li>
                         </ul>
                     </li>
                     <li class="slide">
