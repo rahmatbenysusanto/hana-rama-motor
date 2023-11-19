@@ -21,6 +21,7 @@
                                 <th>Jenis</th>
                                 <th>Tanggal</th>
                                 <th>Keterangan</th>
+                                <th>Action</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -36,6 +37,9 @@
                                         </td>
                                         <td>{{ tanggal_format($a->tanggal_absen) }}</td>
                                         <td>{{ $a->keterangan }}</td>
+                                        <td>
+                                            <a href="/hapus-absen/{{ $a->id }}" class="btn btn-danger btn-sm">Hapus</a>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

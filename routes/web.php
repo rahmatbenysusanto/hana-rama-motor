@@ -149,6 +149,7 @@ Route::group(['middleware' => 'ceklogin'], function () {
         Route::get('/absen-pegawai', 'absen')->name('absen');
         Route::post('/buat-absen', 'buat_absen')->name('buat_absen');
         Route::get('/lihat-absen/{pegawai_id}', 'lihat_absen');
+        Route::get('/hapus-absen/{id}', 'hapus_absen');
     });
 
     Route::controller(\App\Http\Controllers\PegawaiController::class)->group(function () {

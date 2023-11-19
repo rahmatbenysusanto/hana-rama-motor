@@ -66,4 +66,12 @@ class AbsenController extends Controller
         $title = "absen";
         return view('absen.lihat', compact('title', 'absen'));
     }
+
+    public function hapus_absen($id)
+    {
+        Absen::where('id', $id)->delete();
+
+        Session::flash('success', 'Hapus absensi berhasil');
+        return back();
+    }
 }
