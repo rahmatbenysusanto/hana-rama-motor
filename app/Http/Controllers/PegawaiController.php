@@ -173,12 +173,12 @@ class PegawaiController extends Controller
 
                 $dataAbsenMasuk = Absen::where('pegawai_id', $sales_id)
                     ->where('absen', 'masuk')
-                    ->whereBetween('tanggal_absen', [$tahunMulai.'-'.Carbon::now()->subMonth()->month.'-20', $tahun.'-'.$bulan.'-19'])
+                    ->whereBetween('tanggal_absen', [$tahunMulai.'-'.Carbon::now()->subMonth()->month.'-19', $tahun.'-'.$bulan.'-19'])
                     ->count();
 
                 $dataAbsenTidakMasuk = Absen::where('pegawai_id', $sales_id)
                     ->where('absen', 'tidak masuk')
-                    ->whereBetween('tanggal_absen', [$tahunMulai.'-'.Carbon::now()->subMonth()->month.'-20', $tahun.'-'.$bulan.'-19'])
+                    ->whereBetween('tanggal_absen', [$tahunMulai.'-'.Carbon::now()->subMonth()->month.'-19', $tahun.'-'.$bulan.'-19'])
                     ->count();
 
                 $dataSales = Sales::where('id', $sales_id)->first();

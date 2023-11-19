@@ -34,7 +34,7 @@ class HitungGaji extends Command
         $pegawai = new PegawaiController();
 
         // Sales ALIF & WAWAN
-        if ($tanggal == 20) {
+        if ($tanggal == 19) {
             Log::channel('gaji')->info('perhitungan gaji tanggal 20');
             $pegawai->hitungGajiPegawai(2);
             $pegawai->hitungGajiPegawai(16);
