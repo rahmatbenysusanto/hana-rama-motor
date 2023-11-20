@@ -18,27 +18,6 @@ class DashboardController extends Controller
         $tahun = date('Y', time());
         $jumlahPenjualan = Transaksi::WhereMonth('tanggal_penjualan', $bulan)->whereYear('tanggal_penjualan', $tahun)->count();
         $totalPiutang = Transaksi::WhereMonth('tanggal_penjualan', $bulan)->whereYear('tanggal_penjualan', $tahun)->where('tanggal_tempo', '!=', null)->where('status_pembayaran', 'Belum DiBayar')->sum('total_harga');
-        $pendapatanKotor = Transaksi::WhereMonth('tanggal_penjualan', $bulan)->whereYear('tanggal_penjualan', $tahun)->where('status_pembayaran', 'Lunas')->sum('total_harga');
-        $dataTransaksi = DB::table('transaksi')
-                            ->select([
-                                'transaksi.total_harga',
-                                'transaksi_detail.qty',
-                                'inventory_detail.harga'
-                            ])
-                            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id','=', 'transaksi.id')
-                            ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
-                            ->whereMonth('tanggal_penjualan', $bulan)
-                            ->whereYear('tanggal_penjualan', $tahun)
-                            ->where('status_pembayaran', 'Lunas')
-                            ->get();
-
-        $dataPendapatanBersih = 0;
-        foreach ($dataTransaksi as $detail) {
-            $dataPendapatanBersih += $detail->harga * $detail->qty;
-        }
-
-        $pendapatanBersih = $pendapatanKotor - $dataPendapatanBersih;
-
         // Stok Minimal Barang
         $stokMinimal = Inventory::with('barang')->orderBy('stok', 'ASC')->limit(12)->get();
 
@@ -54,6 +33,47 @@ class DashboardController extends Controller
         // Jumlah Pembelian
         $jumlahPembelian = Inbound::WhereMonth('tanggal_datang', $bulan)->whereYear('tanggal_datang', $tahun)->sum('qty_barang');
         $totalPembelian = Inbound::WhereMonth('tanggal_datang', $bulan)->whereYear('tanggal_datang', $tahun)->sum('total_harga');
+
+        $transaksi = DB::table('transaksi')
+            ->select([
+                'transaksi.id as transaksi_id',
+                'transaksi.no_invoice',
+                'transaksi.diskon',
+                'transaksi.tanggal_penjualan',
+                'transaksi_detail.total_harga',
+                'transaksi_detail.qty',
+                'transaksi.tanggal_tempo',
+                'transaksi.status_pembayaran',
+                'transaksi.cicilan',
+                'barang.nama_barang',
+                'barang.sku',
+                'sales.nama as nama_sales',
+                'pelanggan.nama as nama_pelanggan',
+                'inventory_detail.harga'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->leftJoin('sales', 'sales.id', '=', 'transaksi.sales_id')
+            ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
+            ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+            ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
+            ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
+            ->get();
+
+        $pendapatanBersih = 0;
+        $pendapatanKotor = 0;
+
+        foreach ($transaksi as $tra) {
+            if ($tra->status_pembayaran == "Lunas") {
+                $pendapatanKotor += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            }
+
+            if ($tra->cicilan != null) {
+                $pendapatanKotor += $tra->cicilan;
+            }
+
+            $pendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
 
         $title = "dashboard utama";
         return view('dashboard.index', compact("title", "jumlahPenjualan", "totalPiutang", "pendapatanKotor", 'pendapatanBersih', 'stokMinimal', 'totalPenjualan', 'totalTempo', 'totalBelumDiBayar', 'totalPembelian', 'jumlahPembelian'));
@@ -194,8 +214,56 @@ class DashboardController extends Controller
             ->where('barang.kategori_id', 1)
             ->orderBy('inventory.stok', 'ASC')->limit(12)->get();
 
+        $transaksi = DB::table('transaksi')
+            ->select([
+                'transaksi.id as transaksi_id',
+                'transaksi.no_invoice',
+                'transaksi.diskon',
+                'transaksi.tanggal_penjualan',
+                'transaksi_detail.total_harga',
+                'transaksi_detail.qty',
+                'transaksi.tanggal_tempo',
+                'transaksi.status_pembayaran',
+                'transaksi.cicilan',
+                'barang.nama_barang',
+                'barang.sku',
+                'sales.nama as nama_sales',
+                'pelanggan.nama as nama_pelanggan',
+                'inventory_detail.harga'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->leftJoin('sales', 'sales.id', '=', 'transaksi.sales_id')
+            ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
+            ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+            ->where('barang.kategori_id', 1)
+            ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
+            ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
+            ->get();
+
+        $totalPenjualan = 0;
+        $pendapatanBersih = 0;
+        $pendapatanKotor = 0;
+        $totalPenjualanTempo = 0;
+
+        foreach ($transaksi as $tra) {
+            $totalPenjualan+= $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+            if ($tra->status_pembayaran == "Lunas") {
+                $pendapatanKotor += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            } else {
+                $totalPenjualanTempo += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            }
+
+            if ($tra->cicilan != null) {
+                $pendapatanKotor += $tra->cicilan;
+            }
+
+            $pendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
         $title = "dashboard oli";
-        return view('dashboard.dashboard_oli', compact('title', 'stokMinimal'));
+        return view('dashboard.dashboard_oli', compact('title', 'stokMinimal', 'pendapatanBersih', 'pendapatanKotor', 'totalPenjualan', 'totalPenjualanTempo'));
     }
 
     public function getDataOli(): \Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory
@@ -575,6 +643,9 @@ class DashboardController extends Controller
 
     public function ban(): View
     {
+        $bulan = date('m', time());
+        $tahun = date('Y', time());
+
         // Stok Minimal Barang
         $stokMinimal = DB::table('inventory')
             ->select([
@@ -587,12 +658,63 @@ class DashboardController extends Controller
             ->where('barang.kategori_id', 2)
             ->orderBy('inventory.stok', 'ASC')->limit(12)->get();
 
+        $transaksi = DB::table('transaksi')
+            ->select([
+                'transaksi.id as transaksi_id',
+                'transaksi.no_invoice',
+                'transaksi.diskon',
+                'transaksi.tanggal_penjualan',
+                'transaksi_detail.total_harga',
+                'transaksi_detail.qty',
+                'transaksi.tanggal_tempo',
+                'transaksi.status_pembayaran',
+                'transaksi.cicilan',
+                'barang.nama_barang',
+                'barang.sku',
+                'sales.nama as nama_sales',
+                'pelanggan.nama as nama_pelanggan',
+                'inventory_detail.harga'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->leftJoin('sales', 'sales.id', '=', 'transaksi.sales_id')
+            ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
+            ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+            ->where('barang.kategori_id', 2)
+            ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
+            ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
+            ->get();
+
+        $totalPenjualan = 0;
+        $pendapatanBersih = 0;
+        $pendapatanKotor = 0;
+        $totalPenjualanTempo = 0;
+
+        foreach ($transaksi as $tra) {
+            $totalPenjualan+= $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+            if ($tra->status_pembayaran == "Lunas") {
+                $pendapatanKotor += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            } else {
+                $totalPenjualanTempo += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            }
+
+            if ($tra->cicilan != null) {
+                $pendapatanKotor += $tra->cicilan;
+            }
+
+            $pendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
         $title = "dashboard ban";
-        return view('dashboard.dashboard_ban', compact('title', 'stokMinimal'));
+        return view('dashboard.dashboard_ban', compact('title', 'stokMinimal', 'pendapatanBersih', 'pendapatanKotor', 'totalPenjualan', 'totalPenjualanTempo'));
     }
 
     public function sparepart(): View
     {
+        $bulan = date('m', time());
+        $tahun = date('Y', time());
+
         // Stok Minimal Barang
         $stokMinimal = DB::table('inventory')
             ->select([
@@ -605,8 +727,56 @@ class DashboardController extends Controller
             ->where('barang.kategori_id', 3)
             ->orderBy('inventory.stok', 'ASC')->limit(12)->get();
 
-        $title = "dashboard sparepart";
-        return view('dashboard.dashboard_sparepart', compact('title', 'stokMinimal'));
+        $transaksi = DB::table('transaksi')
+            ->select([
+                'transaksi.id as transaksi_id',
+                'transaksi.no_invoice',
+                'transaksi.diskon',
+                'transaksi.tanggal_penjualan',
+                'transaksi_detail.total_harga',
+                'transaksi_detail.qty',
+                'transaksi.tanggal_tempo',
+                'transaksi.status_pembayaran',
+                'transaksi.cicilan',
+                'barang.nama_barang',
+                'barang.sku',
+                'sales.nama as nama_sales',
+                'pelanggan.nama as nama_pelanggan',
+                'inventory_detail.harga'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->leftJoin('sales', 'sales.id', '=', 'transaksi.sales_id')
+            ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
+            ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+            ->where('barang.kategori_id', 3)
+            ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
+            ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
+            ->get();
+
+        $totalPenjualan = 0;
+        $pendapatanBersih = 0;
+        $pendapatanKotor = 0;
+        $totalPenjualanTempo = 0;
+
+        foreach ($transaksi as $tra) {
+            $totalPenjualan+= $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+            if ($tra->status_pembayaran == "Lunas") {
+                $pendapatanKotor += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            } else {
+                $totalPenjualanTempo += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            }
+
+            if ($tra->cicilan != null) {
+                $pendapatanKotor += $tra->cicilan;
+            }
+
+            $pendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
+        $title = "dashboard oli";
+        return view('dashboard.dashboard_oli', compact('title', 'stokMinimal', 'pendapatanBersih', 'pendapatanKotor', 'totalPenjualan', 'totalPenjualanTempo'));
     }
 
     public function chart_oli()

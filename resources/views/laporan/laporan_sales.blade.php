@@ -47,6 +47,24 @@
                     <div class="row">
                         <div class="col-12 pe-0">
                             <p class="mb-2">
+                                <span class="fs-16">Total Pendapatan Bersih</span>
+                            </p>
+                            <p class="mb-2 fs-12">
+                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">@currency($totalPendapatanBersih)</span>
+                                <span class="d-block fs-10 fw-semibold text-muted">Pendapatan Bersih Bulan {{ getBulan() }}</span>
+                            </p>
+                            <a href="javascript:void(0);" class="fs-12 mb-0 text-primary">Lihat Pendapatan Bersih<i class="ti ti-chevron-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6">
+            <div class="card custom-card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 pe-0">
+                            <p class="mb-2">
                                 <span class="fs-16">Total Piutang</span>
                             </p>
                             <p class="mb-2 fs-12">

@@ -34,31 +34,31 @@ class PegawaiController extends Controller
         switch ($sales_id) {
             case 2 :
                 // Hitung Gaji ALIP
-                $mulai = $tahun.'-'.Carbon::now()->subMonth()->month.'-20';
-                $selesai = $tahun.'-'.$bulan.'-20';
-
-                $pendapatanKotor = Transaksi::whereBetween('tanggal_penjualan', [$mulai, $selesai])
-                    ->where('sales_id', $sales_id)
-                    ->sum('total_harga');
-
-                $dataTransaksi = DB::table('transaksi')
-                    ->select([
-                        'transaksi.total_harga',
-                        'transaksi_detail.qty',
-                        'inventory_detail.harga'
-                    ])
-                    ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id','=', 'transaksi.id')
-                    ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
-                    ->whereBetween('tanggal_penjualan', [$mulai, $selesai])
-                    ->where('transaksi.sales_id', $sales_id)
-                    ->get();
-
-                $dataPendapatanBersih = 0;
-                foreach ($dataTransaksi as $detail) {
-                    $dataPendapatanBersih += $detail->harga * $detail->qty;
-                }
-
-                $pendapatanBersih = $pendapatanKotor - $dataPendapatanBersih;
+//                $mulai = $tahun.'-'.Carbon::now()->subMonth()->month.'-20';
+//                $selesai = $tahun.'-'.$bulan.'-20';
+//
+//                $pendapatanKotor = Transaksi::whereBetween('tanggal_penjualan', [$mulai, $selesai])
+//                    ->where('sales_id', $sales_id)
+//                    ->sum('total_harga');
+//
+//                $dataTransaksi = DB::table('transaksi')
+//                    ->select([
+//                        'transaksi.total_harga',
+//                        'transaksi_detail.qty',
+//                        'inventory_detail.harga'
+//                    ])
+//                    ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id','=', 'transaksi.id')
+//                    ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+//                    ->whereBetween('tanggal_penjualan', [$mulai, $selesai])
+//                    ->where('transaksi.sales_id', $sales_id)
+//                    ->get();
+//
+//                $dataPendapatanBersih = 0;
+//                foreach ($dataTransaksi as $detail) {
+//                    $dataPendapatanBersih += $detail->harga * $detail->qty;
+//                }
+//
+//                $pendapatanBersih = $pendapatanKotor - $dataPendapatanBersih;
                 break;
             case 3:
                 if (date('m', time()) == 01 || date('m', time()) == '01') {
@@ -171,14 +171,14 @@ class PegawaiController extends Controller
                     $tahunMulai = date('Y', time());
                 }
 
-                $dataAbsenMasuk = Absen::where('pegawai_id', $sales_id)
-                    ->where('absen', 'masuk')
+                $dataAbsenMasuk = Absen::where('absen', 'masuk')
                     ->whereBetween('tanggal_absen', [$tahunMulai.'-'.Carbon::now()->subMonth()->month.'-19', $tahun.'-'.$bulan.'-19'])
+                    ->where('pegawai_id', $sales_id)
                     ->count();
 
-                $dataAbsenTidakMasuk = Absen::where('pegawai_id', $sales_id)
-                    ->where('absen', 'tidak masuk')
+                $dataAbsenTidakMasuk = Absen::where('absen', 'tidak masuk')
                     ->whereBetween('tanggal_absen', [$tahunMulai.'-'.Carbon::now()->subMonth()->month.'-19', $tahun.'-'.$bulan.'-19'])
+                    ->where('pegawai_id', $sales_id)
                     ->count();
 
                 $dataSales = Sales::where('id', $sales_id)->first();

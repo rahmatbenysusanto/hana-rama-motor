@@ -23,7 +23,7 @@
                                 <span class="fs-16">Total Penjualan</span>
                             </p>
                             <p class="mb-2 fs-12">
-                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0" id="totalPenjualan"></span>
+                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">@currency($totalPenjualan)</span>
                                 <span class="d-block fs-10 fw-semibold text-muted">Total Penjualan Bulan {{ getBulan() }}</span>
                             </p>
                             <a href="{{ route('daftar_transaksi') }}" class="fs-12 mb-0 text-primary">Lihat Detail<i class="ti ti-chevron-right ms-1"></i></a>
@@ -41,7 +41,7 @@
                                 <span class="fs-16">Total Pendapatan Bersih</span>
                             </p>
                             <p class="mb-2 fs-12">
-                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0" id="pendapatanBersih"></span>
+                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">@currency($pendapatanBersih)</span>
                                 <span class="d-block fs-10 fw-semibold text-muted">Pendapatan Bulan {{ getBulan() }}</span>
                             </p>
                             <a href="javascript:void(0);" class="fs-12 mb-0 text-primary">Lihat Detail Pendapatan<i class="ti ti-chevron-right ms-1"></i></a>
@@ -56,10 +56,10 @@
                     <div class="row">
                         <div class="col-12 pe-0">
                             <p class="mb-2">
-                                <span class="fs-16">Total Pendapatan Kotor</span>
+                                <span class="fs-16">Total Transaksi DiBayarkan</span>
                             </p>
                             <p class="mb-2 fs-12">
-                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0" id="pendapatanKotor"></span>
+                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">@currency($pendapatanKotor)</span>
                                 <span class="d-block fs-10 fw-semibold text-muted">Pendapatan Bulan {{ getBulan() }}</span>
                             </p>
                             <a href="javascript:void(0);" class="fs-12 mb-0 text-primary">Lihat Detail Pendapatan<i class="ti ti-chevron-right ms-1"></i></a>
@@ -77,7 +77,7 @@
                                 <span class="fs-16">Total Piutang</span>
                             </p>
                             <p class="mb-2 fs-12">
-                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0" id="totalPiutang"></span>
+                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">@currency($totalPenjualanTempo)</span>
                                 <span class="d-block fs-10 fw-semibold text-muted">Piutang Bulan {{ getBulan() }}</span>
                             </p>
                             <a href="javascript:void(0);" class="fs-12 mb-0 text-primary">Lihat Detail Piutang<i class="ti ti-chevron-right ms-1"></i></a>
@@ -159,17 +159,6 @@
                 currency: "IDR"
             }).format(number);
         }
-
-        $.ajax({
-            url: '{{ route('getDataBan') }}',
-            method: 'GET',
-            success: function (res) {
-                document.getElementById('totalPenjualan').innerText = rupiah(res.total_penjualan);
-                document.getElementById('pendapatanBersih').innerText = rupiah(res.penjualan_bersih);
-                document.getElementById('pendapatanKotor').innerText = rupiah(res.penjualan_kotor);
-                document.getElementById('totalPiutang').innerText = rupiah(res.penjualan_tempo);
-            }
-        });
 
         $.ajax({
             url: '{{ route('chart_ban') }}',

@@ -14,7 +14,7 @@ class LaporanController extends Controller
 {
     public function laporan_transaksi():View
     {
-        $dataSales = Sales::where('id', '!=', 1)->get();
+        $dataSales = Sales::all();
 
         $sales = $dataSales ?? [];
 
@@ -55,10 +55,43 @@ class LaporanController extends Controller
 
         $transaksi = $dataTransaksi ?? [];
 
+        // Pendapatan Bersih
+        $transaksi2 = DB::table('transaksi')
+            ->select([
+                'transaksi.id as transaksi_id',
+                'transaksi.no_invoice',
+                'transaksi.diskon',
+                'transaksi.tanggal_penjualan',
+                'transaksi_detail.total_harga',
+                'transaksi_detail.qty',
+                'transaksi.tanggal_tempo',
+                'transaksi.status_pembayaran',
+                'transaksi.cicilan',
+                'barang.nama_barang',
+                'barang.sku',
+                'sales.nama as nama_sales',
+                'pelanggan.nama as nama_pelanggan',
+                'inventory_detail.harga'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->leftJoin('sales', 'sales.id', '=', 'transaksi.sales_id')
+            ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
+            ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+            ->where('transaksi.sales_id', $id)
+            ->whereMonth('transaksi.tanggal_penjualan', $bulan)
+            ->whereYear('transaksi.tanggal_penjualan', $tahun)
+            ->get();
+
+        $totalPendapatanBersih = 0;
+        foreach ($transaksi2 as $tra) {
+            $totalPendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
         $waktu = tanggal_format(date('Y-m-d', time()));
 
         $title = "laporan transaksi";
-        return view('laporan.laporan_sales', compact('title', 'sales', 'totalPenjualan', 'jumlahTransaksi', 'piutang', 'transaksi', 'waktu'));
+        return view('laporan.laporan_sales', compact('title', 'sales', 'totalPenjualan', 'jumlahTransaksi', 'piutang', 'transaksi', 'waktu', 'totalPendapatanBersih'));
     }
 
     public function laporan_sales_tanggal(Request $request)
