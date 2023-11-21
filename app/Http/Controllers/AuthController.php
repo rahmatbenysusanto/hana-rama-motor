@@ -35,7 +35,7 @@ class AuthController extends Controller
 
             $pengaturan = Pengaturan::where('id', 1)->first();
 
-            Session::put('pengaturanBarang', $pengaturan[0]->status);
+            Session::put('pengaturanBarang', $pengaturan->status);
             Session::put('data_user', $user);
 
             return redirect()->action([DashboardController::class, 'index']);
