@@ -8,6 +8,7 @@ use App\Models\Transaksi;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class LaporanController extends Controller
@@ -194,8 +195,10 @@ class LaporanController extends Controller
                 'transaksi.tanggal_tempo',
                 'transaksi.status_pembayaran',
                 'transaksi.cicilan',
+                'barang.id as barang_id',
                 'barang.nama_barang',
                 'barang.sku',
+                'barang.kategori_id',
                 'sales.nama as nama_sales',
                 'pelanggan.nama as nama_pelanggan',
                 'inventory_detail.harga'
@@ -216,17 +219,37 @@ class LaporanController extends Controller
         $totalPenjualanKotor = 0;
         $totalPenjualanTempo = 0;
 
+        $totalPenjualanOli = 0;
+        $pendapatanBersihOli = 0;
+        $pendapatanKotorOli = 0;
+        $totalPenjualanTempoOli = 0;
+
         foreach ($transaksi as $tra) {
-            $listTransaksi[] = [
-                'no_invoice'    => $tra->no_invoice,
-                'nama_barang'   => $tra->nama_barang,
-                'sku'           => $tra->sku,
-                'sales'         => $tra->nama_sales,
-                'pelanggan'     => $tra->nama_pelanggan,
-                'qty'           => $tra->qty,
-                'harga'         => $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100)),
-                'tanggal'       => $tra->tanggal_penjualan
-            ];
+            if (Session::get('pengaturanBarang') == 1) {
+                $listTransaksi[] = [
+                    'no_invoice'    => $tra->no_invoice,
+                    'nama_barang'   => $tra->nama_barang,
+                    'sku'           => $tra->sku,
+                    'sales'         => $tra->nama_sales,
+                    'pelanggan'     => $tra->nama_pelanggan,
+                    'qty'           => $tra->qty,
+                    'harga'         => $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100)),
+                    'tanggal'       => $tra->tanggal_penjualan
+                ];
+            } else {
+                if ($tra->barang_id == 28 || $tra->barang_id == 29 || $tra->barang_id == 30 || $tra->barang_id == 31) {
+                    $listTransaksi[] = [
+                        'no_invoice'    => $tra->no_invoice,
+                        'nama_barang'   => $tra->nama_barang,
+                        'sku'           => $tra->sku,
+                        'sales'         => $tra->nama_sales,
+                        'pelanggan'     => $tra->nama_pelanggan,
+                        'qty'           => $tra->qty,
+                        'harga'         => $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100)),
+                        'tanggal'       => $tra->tanggal_penjualan
+                    ];
+                }
+            }
 
             $totalPenjualan+= $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
 
@@ -241,6 +264,47 @@ class LaporanController extends Controller
             }
 
             $totalPendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
+        if (Session::get('pengaturanBarang') == 0) {
+            foreach ($transaksi as $tra) {
+                if ($tra->kategori_id == 2 ) {
+                    $totalPenjualanOli += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+                    if ($tra->status_pembayaran == "Lunas") {
+                        $pendapatanKotorOli += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+                    } else {
+                        $totalPenjualanTempoOli += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+                    }
+
+                    if ($tra->cicilan != null) {
+                        $pendapatanKotorOli += $tra->cicilan;
+                    }
+
+                    $pendapatanBersihOli += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+                }
+
+                if ($tra->barang_id == 28 || $tra->barang_id == 29 || $tra->barang_id == 30 || $tra->barang_id == 31) {
+                    $totalPenjualanOli += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+                    if ($tra->status_pembayaran == "Lunas") {
+                        $pendapatanKotorOli += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+                    } else {
+                        $totalPenjualanTempoOli += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+                    }
+
+                    if ($tra->cicilan != null) {
+                        $pendapatanKotorOli += $tra->cicilan;
+                    }
+
+                    $pendapatanBersihOli += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+                }
+            }
+
+            $totalPenjualan = $totalPenjualan - $totalPenjualanOli;
+            $totalPendapatanBersih = $totalPendapatanBersih - $pendapatanBersihOli;
+            $totalPenjualanKotor = $totalPenjualanKotor - $pendapatanKotorOli;
+            $totalPenjualanTempo = $totalPenjualanTempo - $totalPenjualanTempoOli;
         }
 
         $title = "laporan oli";
