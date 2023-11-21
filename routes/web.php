@@ -155,5 +155,10 @@ Route::group(['middleware' => 'ceklogin'], function () {
     Route::controller(\App\Http\Controllers\PegawaiController::class)->group(function () {
         Route::post('/tambah-pegawai', 'tambah_pegawai')->name('tambah_pegawai');
     });
+
+    Route::controller(\App\Http\Controllers\PengaturanController::class)->group(function () {
+        Route::get('/pengaturan-gudang', 'index')->name('pengaturan');
+        Route::get('/ubah-pengaturan', 'ubah_pengaturan')->name('ubah_pengaturan');
+    });
 });
 

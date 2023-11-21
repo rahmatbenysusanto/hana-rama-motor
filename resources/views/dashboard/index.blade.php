@@ -79,7 +79,7 @@
                                 <span class="fs-16">Total Piutang</span>
                             </p>
                             <p class="mb-2 fs-12">
-                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">@currency($totalPiutang)</span>
+                                <span class="fs-25 fw-semibold lh-1 vertical-bottom mb-0">@currency($totalPenjualanTempo)</span>
                                 <span class="d-block fs-10 fw-semibold text-muted">Piutang Bulan {{ getBulan() }}</span>
                             </p>
                             <a href="javascript:void(0);" class="fs-12 mb-0 text-primary">Lihat Detail Piutang<i class="ti ti-chevron-right ms-1"></i></a>

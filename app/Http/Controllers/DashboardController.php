@@ -8,21 +8,18 @@ use App\Models\Inventory;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(): View
+    public function index()
     {
         $bulan = date('m', time());
         $tahun = date('Y', time());
         $jumlahPenjualan = Transaksi::WhereMonth('tanggal_penjualan', $bulan)->whereYear('tanggal_penjualan', $tahun)->count();
-        $totalPiutang = Transaksi::WhereMonth('tanggal_penjualan', $bulan)->whereYear('tanggal_penjualan', $tahun)->where('tanggal_tempo', '!=', null)->where('status_pembayaran', 'Belum DiBayar')->sum('total_harga');
         // Stok Minimal Barang
         $stokMinimal = Inventory::with('barang')->orderBy('stok', 'ASC')->limit(12)->get();
-
-        // Total Semua Penjualan
-        $totalPenjualan = Transaksi::WhereMonth('tanggal_penjualan', $bulan)->whereYear('tanggal_penjualan', $tahun)->sum('total_harga');
 
         // Jumlah Tempo
         $totalTempo = Transaksi::WhereMonth('tanggal_penjualan', $bulan)->whereYear('tanggal_penjualan', $tahun)->where('tanggal_tempo', '!=', null)->count();
@@ -45,8 +42,10 @@ class DashboardController extends Controller
                 'transaksi.tanggal_tempo',
                 'transaksi.status_pembayaran',
                 'transaksi.cicilan',
+                'barang.id as barang_id',
                 'barang.nama_barang',
                 'barang.sku',
+                'barang.kategori_id',
                 'sales.nama as nama_sales',
                 'pelanggan.nama as nama_pelanggan',
                 'inventory_detail.harga'
@@ -60,12 +59,23 @@ class DashboardController extends Controller
             ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
             ->get();
 
+        $totalPenjualan = 0;
         $pendapatanBersih = 0;
         $pendapatanKotor = 0;
+        $totalPenjualanTempo = 0;
+
+        $totalPenjualanBan = 0;
+        $pendapatanBersihBan = 0;
+        $pendapatanKotorBan = 0;
+        $totalPenjualanTempoBan = 0;
 
         foreach ($transaksi as $tra) {
+            $totalPenjualan+= $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
             if ($tra->status_pembayaran == "Lunas") {
                 $pendapatanKotor += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+            } else {
+                $totalPenjualanTempo += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
             }
 
             if ($tra->cicilan != null) {
@@ -75,8 +85,49 @@ class DashboardController extends Controller
             $pendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
         }
 
+        if (Session::get('pengaturanBarang') == 0) {
+            foreach ($transaksi as $tra) {
+                if ($tra->kategori_id == 2 ) {
+                    $totalPenjualanBan += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+                    if ($tra->status_pembayaran == "Lunas") {
+                        $pendapatanKotorBan += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+                    } else {
+                        $totalPenjualanTempoBan += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+                    }
+
+                    if ($tra->cicilan != null) {
+                        $pendapatanKotorBan += $tra->cicilan;
+                    }
+
+                    $pendapatanBersihBan += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+                }
+
+                if ($tra->barang_id == 28 || $tra->barang_id == 29 || $tra->barang_id == 30 || $tra->barang_id == 31) {
+                    $totalPenjualanBan += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+                    if ($tra->status_pembayaran == "Lunas") {
+                        $pendapatanKotorBan += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+                    } else {
+                        $totalPenjualanTempoBan += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+                    }
+
+                    if ($tra->cicilan != null) {
+                        $pendapatanKotorBan += $tra->cicilan;
+                    }
+
+                    $pendapatanBersihBan += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+                }
+            }
+
+            $totalPenjualan = $totalPenjualan - $totalPenjualanBan;
+            $pendapatanBersih = $pendapatanBersih - $pendapatanBersihBan;
+            $pendapatanKotor = $pendapatanKotor - $pendapatanKotorBan;
+            $totalPenjualanTempo = $totalPenjualanTempo - $totalPenjualanTempoBan;
+        }
+
         $title = "dashboard utama";
-        return view('dashboard.index', compact("title", "jumlahPenjualan", "totalPiutang", "pendapatanKotor", 'pendapatanBersih', 'stokMinimal', 'totalPenjualan', 'totalTempo', 'totalBelumDiBayar', 'totalPembelian', 'jumlahPembelian'));
+        return view('dashboard.index', compact("title", "jumlahPenjualan", "totalPenjualanTempo", "pendapatanKotor", 'pendapatanBersih', 'stokMinimal', 'totalPenjualan', 'totalTempo', 'totalBelumDiBayar', 'totalPembelian', 'jumlahPembelian'));
     }
 
     public function dashboardChartTotalPenjualan(): \Illuminate\Foundation\Application|\Illuminate\Http\Response|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory
@@ -225,8 +276,10 @@ class DashboardController extends Controller
                 'transaksi.tanggal_tempo',
                 'transaksi.status_pembayaran',
                 'transaksi.cicilan',
+                'barang.id as barang_id',
                 'barang.nama_barang',
                 'barang.sku',
+                'barang.kategori_id',
                 'sales.nama as nama_sales',
                 'pelanggan.nama as nama_pelanggan',
                 'inventory_detail.harga'
@@ -246,6 +299,11 @@ class DashboardController extends Controller
         $pendapatanKotor = 0;
         $totalPenjualanTempo = 0;
 
+        $totalPenjualanBan = 0;
+        $pendapatanBersihBan = 0;
+        $pendapatanKotorBan = 0;
+        $totalPenjualanTempoBan = 0;
+
         foreach ($transaksi as $tra) {
             $totalPenjualan+= $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
 
@@ -260,6 +318,47 @@ class DashboardController extends Controller
             }
 
             $pendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
+        if (Session::get('pengaturanBarang') == 0) {
+            foreach ($transaksi as $tra) {
+                if ($tra->kategori_id == 2 ) {
+                    $totalPenjualanBan += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+                    if ($tra->status_pembayaran == "Lunas") {
+                        $pendapatanKotorBan += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+                    } else {
+                        $totalPenjualanTempoBan += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+                    }
+
+                    if ($tra->cicilan != null) {
+                        $pendapatanKotorBan += $tra->cicilan;
+                    }
+
+                    $pendapatanBersihBan += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+                }
+
+                if ($tra->barang_id == 28 || $tra->barang_id == 29 || $tra->barang_id == 30 || $tra->barang_id == 31) {
+                    $totalPenjualanBan += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+
+                    if ($tra->status_pembayaran == "Lunas") {
+                        $pendapatanKotorBan += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+                    } else {
+                        $totalPenjualanTempoBan += $tra->total_harga - ($tra->total_harga * ($tra->diskon / 100));
+                    }
+
+                    if ($tra->cicilan != null) {
+                        $pendapatanKotorBan += $tra->cicilan;
+                    }
+
+                    $pendapatanBersihBan += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+                }
+            }
+
+            $totalPenjualan = $totalPenjualan - $totalPenjualanBan;
+            $pendapatanBersih = $pendapatanBersih - $pendapatanBersihBan;
+            $pendapatanKotor = $pendapatanKotor - $pendapatanKotorBan;
+            $totalPenjualanTempo = $totalPenjualanTempo - $totalPenjualanTempoBan;
         }
 
         $title = "dashboard oli";

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pengaturan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,10 @@ class AuthController extends Controller
                 ])
                 ->where('name', $request->post('name'))
                 ->first();
+
+            $pengaturan = Pengaturan::where('id', 1)->first();
+
+            Session::put('pengaturanBarang', $pengaturan[0]->status);
             Session::put('data_user', $user);
 
             return redirect()->action([DashboardController::class, 'index']);
