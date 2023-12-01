@@ -141,8 +141,8 @@ class PegawaiController extends Controller
 
                 $potonganTidakMasuk = $dataAbsenTidakMasuk * 70000;
 
-                $uangMakan = ($dataAbsenMasuk * $dataSales->uang_makan) - ($dataAbsenTidakMasuk * $dataSales->uang_makan);
-                $uangBensin = ($dataAbsenMasuk * $dataSales->uang_bensin) - ($dataAbsenTidakMasuk * $dataSales->uang_bensin);
+                $uangMakan = ($dataAbsenMasuk * $dataSales->uang_makan);
+                $uangBensin = ($dataAbsenMasuk * $dataSales->uang_bensin);
 
                 $gajiBersih = $dataSales->gaji_pokok + $uangBensin + $uangBensin + $dataSales->sewa_kendaraan + $bonusOli + $bonusSparepart - $potonganTidakMasuk;
 

@@ -113,8 +113,8 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>@currency($gaji->gaji_pokok)</td>
-                                        <td>@currency($gaji->uang_bensin)</td>
                                         <td>@currency($gaji->uang_makan)</td>
+                                        <td>@currency($gaji->uang_bensin)</td>
                                         <td>@currency($gaji->sewa_kendaraan)</td>
                                         <td>@currency($gaji->operasional)</td>
                                         <td>@currency($gaji->kas_bon)</td>
