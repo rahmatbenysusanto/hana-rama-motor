@@ -80,6 +80,7 @@ class LaporanController extends Controller
             ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
             ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
             ->where('transaksi.sales_id', $id)
+            ->where('transaksi.status', 'penjualan')
             ->whereMonth('transaksi.tanggal_penjualan', $bulan)
             ->whereYear('transaksi.tanggal_penjualan', $tahun)
             ->get();
@@ -112,12 +113,14 @@ class LaporanController extends Controller
             ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
             ->where('tanggal_tempo', '!=', null)
             ->where('status_pembayaran', 'Belum DiBayar')
+            ->where('status', 'penjualan')
             ->sum('total_harga');
 
         // List Transaksi
         $dataTransaksi = Transaksi::with('sales', 'pelanggan', 'pembayaran')
             ->where('sales_id', $request->sales_id)
             ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
+            ->where('status', 'penjualan')
             ->orderBy('tanggal_penjualan', 'DESC')
             ->get();
 
@@ -160,6 +163,7 @@ class LaporanController extends Controller
             ->whereYear('tanggal_penjualan', $tahun)
             ->where('tanggal_tempo', '!=', null)
             ->where('status_pembayaran', 'Belum DiBayar')
+            ->where('status', 'penjualan')
             ->sum('total_harga');
 
         // List Transaksi
@@ -167,6 +171,7 @@ class LaporanController extends Controller
             ->where('sales_id', $id)
             ->whereMonth('tanggal_penjualan', $bulan)
             ->whereYear('tanggal_penjualan', $tahun)
+            ->where('status', 'penjualan')
             ->orderBy('tanggal_penjualan', 'DESC')
             ->get();
 
@@ -209,6 +214,7 @@ class LaporanController extends Controller
             ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
             ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
             ->where('barang.kategori_id', 1)
+            ->where('transaksi.status', 'penjualan')
             ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
             ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
             ->get();
@@ -336,6 +342,7 @@ class LaporanController extends Controller
             ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
             ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
             ->where('barang.kategori_id', 2)
+            ->where('transaksi.status', 'penjualan')
             ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
             ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
             ->get();
@@ -401,6 +408,7 @@ class LaporanController extends Controller
         ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
         ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
         ->where('barang.kategori_id', 3)
+        ->where('transaksi.status', 'penjualan')
         ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
         ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
         ->get();
@@ -467,6 +475,7 @@ class LaporanController extends Controller
             ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
             ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
             ->where('barang.kategori_id', 1)
+            ->where('transaksi.status', 'penjualan')
             ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
             ->orderBy('transaksi.tanggal_penjualan', 'DESC')
             ->get();
@@ -533,6 +542,7 @@ class LaporanController extends Controller
             ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
             ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
             ->where('barang.kategori_id', 2)
+            ->where('transaksi.status', 'penjualan')
             ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
             ->orderBy('transaksi.tanggal_penjualan', 'DESC')
             ->get();
@@ -599,6 +609,7 @@ class LaporanController extends Controller
             ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
             ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
             ->where('barang.kategori_id', 3)
+            ->where('transaksi.status', 'penjualan')
             ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
             ->orderBy('transaksi.tanggal_penjualan', 'DESC')
             ->get();

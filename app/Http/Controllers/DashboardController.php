@@ -57,6 +57,7 @@ class DashboardController extends Controller
             ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
             ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
             ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
+            ->where('transaksi.status', 'penjualan')
             ->get();
 
         $totalPenjualan = 0;
@@ -153,6 +154,7 @@ class DashboardController extends Controller
                 ->WhereMonth('tanggal_penjualan', $a)
                 ->whereYear('tanggal_penjualan', $tahun)
                 ->where('barang.kategori_id', 1)
+                ->where('transaksi.status', 'penjualan')
                 ->groupBy('transaksi.id')
                 ->get();
 
@@ -168,6 +170,7 @@ class DashboardController extends Controller
                     ->whereYear('tanggal_penjualan', $tahun)
                     ->where('barang.kategori_id', 1)
                     ->where('transaksi.id', $oli->id)
+                    ->where('transaksi.status', 'penjualan')
                     ->sum('transaksi_detail.total_harga');
 
                 $totalOli += $dataOli - ($dataOli * ($oli->diskon / 100));
@@ -186,6 +189,7 @@ class DashboardController extends Controller
                 ->WhereMonth('tanggal_penjualan', $a)
                 ->whereYear('tanggal_penjualan', $tahun)
                 ->where('barang.kategori_id', 2)
+                ->where('transaksi.status', 'penjualan')
                 ->groupBy('transaksi.id')
                 ->get();
 
@@ -200,6 +204,7 @@ class DashboardController extends Controller
                     ->WhereMonth('tanggal_penjualan', $a)
                     ->whereYear('tanggal_penjualan', $tahun)
                     ->where('barang.kategori_id', 2)
+                    ->where('transaksi.status', 'penjualan')
                     ->where('transaksi.id', $ban->id)
                     ->sum('transaksi_detail.total_harga');
 
@@ -219,6 +224,7 @@ class DashboardController extends Controller
                 ->WhereMonth('tanggal_penjualan', $a)
                 ->whereYear('tanggal_penjualan', $tahun)
                 ->where('barang.kategori_id', 3)
+                ->where('transaksi.status', 'penjualan')
                 ->groupBy('transaksi.id')
                 ->get();
 
@@ -234,6 +240,7 @@ class DashboardController extends Controller
                     ->whereYear('tanggal_penjualan', $tahun)
                     ->where('barang.kategori_id', 3)
                     ->where('transaksi.id', $spar->id)
+                    ->where('transaksi.status', 'penjualan')
                     ->sum('transaksi_detail.total_harga');
 
                 $totalSparepart += $dataSparepart - ($dataSparepart * ($spar->diskon / 100));
@@ -290,6 +297,7 @@ class DashboardController extends Controller
             ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
             ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
             ->where('barang.kategori_id', 1)
+            ->where('transaksi.status', 'penjualan')
             ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
             ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
             ->get();
@@ -387,6 +395,7 @@ class DashboardController extends Controller
                             ->WhereMonth('tanggal_penjualan', $bulan)
                             ->whereYear('tanggal_penjualan', $tahun)
                             ->where('barang.kategori_id', 1)
+                            ->where('transaksi.status', 'penjualan')
                             ->groupBy('transaksi.id')
                             ->get();
 
@@ -408,6 +417,7 @@ class DashboardController extends Controller
                 ->WhereMonth('tanggal_penjualan', $bulan)
                 ->whereYear('tanggal_penjualan', $tahun)
                 ->where('barang.kategori_id', 1)
+                ->where('transaksi.status', 'penjualan')
                 ->where('transaksi.id', $transaksi->id);
 
             $dataTotalPenjualan = $dataOli->sum('transaksi_detail.total_harga');
@@ -430,6 +440,7 @@ class DashboardController extends Controller
                 ->where('barang.kategori_id', 1)
                 ->where('transaksi.id', $transaksi->id)
                 ->where('status_pembayaran', 'Lunas')
+                ->where('transaksi.status', 'penjualan')
                 ->get();
 
             $dataPendapatanBersih = 0;
@@ -454,6 +465,7 @@ class DashboardController extends Controller
                 ->where('barang.kategori_id', 1)
                 ->where('transaksi.id', $transaksi->id)
                 ->where('status_pembayaran', 'Lunas')
+                ->where('transaksi.status', 'penjualan')
                 ->sum('transaksi_detail.total_harga');
 
             $cariTotalPenjualanKotor = $dataTotalPenjualanKotor - ($dataTotalPenjualanKotor * ($transaksi->diskon / 100));
@@ -476,6 +488,7 @@ class DashboardController extends Controller
                 ->where('transaksi.id', $transaksi->id)
                 ->where('tanggal_tempo', '!=', null)
                 ->where('status_pembayaran', 'Belum DiBayar')
+                ->where('transaksi.status', 'penjualan')
                 ->sum('transaksi_detail.total_harga');
 
             $totalPenjualanTempo += $dataTotalPenjualanTempo - ($dataTotalPenjualanTempo * ($transaksi->diskon / 100));
@@ -512,6 +525,7 @@ class DashboardController extends Controller
             ->WhereMonth('tanggal_penjualan', $bulan)
             ->whereYear('tanggal_penjualan', $tahun)
             ->where('barang.kategori_id', 2)
+            ->where('transaksi.status', 'penjualan')
             ->groupBy('transaksi.id')
             ->get();
 
@@ -533,6 +547,7 @@ class DashboardController extends Controller
                 ->WhereMonth('tanggal_penjualan', $bulan)
                 ->whereYear('tanggal_penjualan', $tahun)
                 ->where('barang.kategori_id', 2)
+                ->where('transaksi.status', 'penjualan')
                 ->where('transaksi.id', $transaksi->id);
 
             $dataTotalPenjualan = $dataOli->sum('transaksi_detail.total_harga');
@@ -555,6 +570,7 @@ class DashboardController extends Controller
                 ->where('barang.kategori_id', 2)
                 ->where('transaksi.id', $transaksi->id)
                 ->where('status_pembayaran', 'Lunas')
+                ->where('transaksi.status', 'penjualan')
                 ->get();
 
             $dataPendapatanBersih = 0;
@@ -579,6 +595,7 @@ class DashboardController extends Controller
                 ->where('barang.kategori_id', 2)
                 ->where('transaksi.id', $transaksi->id)
                 ->where('status_pembayaran', 'Lunas')
+                ->where('transaksi.status', 'penjualan')
                 ->sum('transaksi_detail.total_harga');
 
             $cariTotalPenjualanKotor = $dataTotalPenjualanKotor - ($dataTotalPenjualanKotor * ($transaksi->diskon / 100));
@@ -601,6 +618,7 @@ class DashboardController extends Controller
                 ->where('transaksi.id', $transaksi->id)
                 ->where('tanggal_tempo', '!=', null)
                 ->where('status_pembayaran', 'Belum DiBayar')
+                ->where('transaksi.status', 'penjualan')
                 ->sum('transaksi_detail.total_harga');
 
             $totalPenjualanTempo += $dataTotalPenjualanTempo - ($dataTotalPenjualanTempo * ($transaksi->diskon / 100));
@@ -637,6 +655,7 @@ class DashboardController extends Controller
             ->WhereMonth('tanggal_penjualan', $bulan)
             ->whereYear('tanggal_penjualan', $tahun)
             ->where('barang.kategori_id', 3)
+            ->where('transaksi.status', 'penjualan')
             ->groupBy('transaksi.id')
             ->get();
 
@@ -658,6 +677,7 @@ class DashboardController extends Controller
                 ->WhereMonth('tanggal_penjualan', $bulan)
                 ->whereYear('tanggal_penjualan', $tahun)
                 ->where('barang.kategori_id', 3)
+                ->where('transaksi.status', 'penjualan')
                 ->where('transaksi.id', $transaksi->id);
 
             $dataTotalPenjualan = $dataOli->sum('transaksi_detail.total_harga');
@@ -680,6 +700,7 @@ class DashboardController extends Controller
                 ->where('barang.kategori_id', 3)
                 ->where('transaksi.id', $transaksi->id)
                 ->where('status_pembayaran', 'Lunas')
+                ->where('transaksi.status', 'penjualan')
                 ->get();
 
             $dataPendapatanBersih = 0;
@@ -704,6 +725,7 @@ class DashboardController extends Controller
                 ->where('barang.kategori_id', 3)
                 ->where('transaksi.id', $transaksi->id)
                 ->where('status_pembayaran', 'Lunas')
+                ->where('transaksi.status', 'penjualan')
                 ->sum('transaksi_detail.total_harga');
 
             $cariTotalPenjualanKotor = $dataTotalPenjualanKotor - ($dataTotalPenjualanKotor * ($transaksi->diskon / 100));
@@ -726,6 +748,7 @@ class DashboardController extends Controller
                 ->where('transaksi.id', $transaksi->id)
                 ->where('tanggal_tempo', '!=', null)
                 ->where('status_pembayaran', 'Belum DiBayar')
+                ->where('transaksi.status', 'penjualan')
                 ->sum('transaksi_detail.total_harga');
 
             $totalPenjualanTempo += $dataTotalPenjualanTempo - ($dataTotalPenjualanTempo * ($transaksi->diskon / 100));
@@ -780,6 +803,7 @@ class DashboardController extends Controller
             ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
             ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
             ->where('barang.kategori_id', 2)
+            ->where('transaksi.status', 'penjualan')
             ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
             ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
             ->get();
@@ -849,6 +873,7 @@ class DashboardController extends Controller
             ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
             ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
             ->where('barang.kategori_id', 3)
+            ->where('transaksi.status', 'penjualan')
             ->whereMonth('transaksi.tanggal_penjualan', date('m', time()))
             ->whereYear('transaksi.tanggal_penjualan', date('Y', time()))
             ->get();
@@ -894,6 +919,7 @@ class DashboardController extends Controller
                 ->WhereMonth('tanggal_penjualan', $a)
                 ->whereYear('tanggal_penjualan', $tahun)
                 ->where('barang.kategori_id', 1)
+                ->where('transaksi.status', 'penjualan')
                 ->groupBy('transaksi.id')
                 ->get();
 
@@ -913,6 +939,7 @@ class DashboardController extends Controller
                     ->WhereMonth('tanggal_penjualan', $a)
                     ->whereYear('tanggal_penjualan', $tahun)
                     ->where('barang.kategori_id', 1)
+                    ->where('transaksi.status', 'penjualan')
                     ->where('transaksi.id', $transaksi->id);
 
                 $dataTotalPenjualan = $dataOli->sum('transaksi_detail.total_harga');
@@ -943,6 +970,7 @@ class DashboardController extends Controller
                 ->WhereMonth('tanggal_penjualan', $a)
                 ->whereYear('tanggal_penjualan', $tahun)
                 ->where('barang.kategori_id', 2)
+                ->where('transaksi.status', 'penjualan')
                 ->groupBy('transaksi.id')
                 ->get();
 
@@ -962,6 +990,7 @@ class DashboardController extends Controller
                     ->WhereMonth('tanggal_penjualan', $a)
                     ->whereYear('tanggal_penjualan', $tahun)
                     ->where('barang.kategori_id', 2)
+                    ->where('transaksi.status', 'penjualan')
                     ->where('transaksi.id', $transaksi->id);
 
                 $dataTotalPenjualan = $dataOli->sum('transaksi_detail.total_harga');
@@ -992,6 +1021,7 @@ class DashboardController extends Controller
                 ->WhereMonth('tanggal_penjualan', $a)
                 ->whereYear('tanggal_penjualan', $tahun)
                 ->where('barang.kategori_id', 3)
+                ->where('transaksi.status', 'penjualan')
                 ->groupBy('transaksi.id')
                 ->get();
 
@@ -1011,6 +1041,7 @@ class DashboardController extends Controller
                     ->WhereMonth('tanggal_penjualan', $a)
                     ->whereYear('tanggal_penjualan', $tahun)
                     ->where('barang.kategori_id', 3)
+                    ->where('transaksi.status', 'penjualan')
                     ->where('transaksi.id', $transaksi->id);
 
                 $dataTotalPenjualan = $dataOli->sum('transaksi_detail.total_harga');
