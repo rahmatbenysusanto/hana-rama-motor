@@ -98,38 +98,76 @@ class LaporanController extends Controller
 
     public function laporan_sales_tanggal(Request $request)
     {
+        $bulan = date('m', time());
+        $tahun = date('Y', time());
+
         $dataSales = Sales::where('id', $request->sales_id)->first();
 
         $sales = $dataSales ?? [];
 
         // Total Pendapatan Sales
-        $totalPenjualan = Transaksi::where('sales_id', $request->sales_id)->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])->sum('total_harga');
+        $totalPenjualan = Transaksi::where('sales_id', $request->sales_id)
+            ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
+            ->sum('total_harga');
 
         // Jumlah Transaksi
-        $jumlahTransaksi = Transaksi::where('sales_id', $request->sales_id)->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])->count();
+        $jumlahTransaksi = Transaksi::where('sales_id', $request->sales_id)
+            ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
+            ->count();
 
         // Piutang
         $piutang = Transaksi::where('sales_id', $request->sales_id)
             ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
             ->where('tanggal_tempo', '!=', null)
             ->where('status_pembayaran', 'Belum DiBayar')
-            ->where('status', 'penjualan')
             ->sum('total_harga');
 
         // List Transaksi
         $dataTransaksi = Transaksi::with('sales', 'pelanggan', 'pembayaran')
             ->where('sales_id', $request->sales_id)
             ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
-            ->where('status', 'penjualan')
             ->orderBy('tanggal_penjualan', 'DESC')
             ->get();
 
         $transaksi = $dataTransaksi ?? [];
 
+        // Pendapatan Bersih
+        $transaksi2 = DB::table('transaksi')
+            ->select([
+                'transaksi.id as transaksi_id',
+                'transaksi.no_invoice',
+                'transaksi.diskon',
+                'transaksi.tanggal_penjualan',
+                'transaksi_detail.total_harga',
+                'transaksi_detail.qty',
+                'transaksi.tanggal_tempo',
+                'transaksi.status_pembayaran',
+                'transaksi.cicilan',
+                'barang.nama_barang',
+                'barang.sku',
+                'sales.nama as nama_sales',
+                'pelanggan.nama as nama_pelanggan',
+                'inventory_detail.harga'
+            ])
+            ->leftJoin('transaksi_detail', 'transaksi_detail.transaksi_id', '=', 'transaksi.id')
+            ->leftJoin('barang', 'barang.id', '=', 'transaksi_detail.barang_id')
+            ->leftJoin('sales', 'sales.id', '=', 'transaksi.sales_id')
+            ->leftJoin('pelanggan', 'pelanggan.id', '=', 'transaksi.pelanggan_id')
+            ->leftJoin('inventory_detail', 'inventory_detail.id', '=', 'transaksi_detail.inventory_detail_id')
+            ->where('transaksi.sales_id', $request->sales_id)
+            ->where('transaksi.status', 'penjualan')
+            ->whereBetween('tanggal_penjualan', [$request->awal, $request->akhir])
+            ->get();
+
+        $totalPendapatanBersih = 0;
+        foreach ($transaksi2 as $tra) {
+            $totalPendapatanBersih += ($tra->total_harga - ($tra->total_harga * ($tra->diskon / 100))) - ($tra->harga * $tra->qty);
+        }
+
         $waktu = tanggal_format($request->awal) . " sampai " . tanggal_format($request->akhir);
 
         $title = "laporan transaksi";
-        return view('laporan.laporan_sales', compact('title', 'sales', 'totalPenjualan', 'jumlahTransaksi', 'piutang', 'transaksi', 'waktu'));
+        return view('laporan.laporan_sales', compact('title', 'sales', 'totalPenjualan', 'jumlahTransaksi', 'piutang', 'transaksi', 'waktu', 'totalPendapatanBersih'));
     }
 
     public function laporan_gaji(): View
