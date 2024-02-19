@@ -9,7 +9,7 @@ class Barang extends Model
 {
     use HasFactory;
     protected $table = "barang";
-    protected $fillable = ["sku", "nama_barang", "harga_sales", "harga_umum", "kategori_id"];
+    protected $fillable = ["sku", "nama_barang", "harga_sales", "harga_umum", "kategori_id", "delete"];
 
     public function inventory(): \Illuminate\Database\Eloquent\Relations\HasOne
     {

@@ -40,7 +40,7 @@ class TransaksiController extends Controller
     {
         $dataPelanggan = Pelanggan::all();
         $dataSales = Sales::all();
-        $dataBarang = Barang::all();
+        $dataBarang = Barang::where('delete', null)->get();
         $dataPembayaran = Pembayaran::all();
 
         $pelanggan = $dataPelanggan ?? [];
@@ -207,7 +207,7 @@ class TransaksiController extends Controller
     public function buat_sampel_sales(): View
     {
         $dataSales = Sales::all();
-        $dataBarang = Barang::all();
+        $dataBarang = Barang::where('delete', null)->get();
 
         $sales = $dataSales ?? [];
         $barang  = $dataBarang ?? [];
@@ -521,7 +521,7 @@ class TransaksiController extends Controller
     public function pengambilan_barang()
     {
         $dataSales = Sales::all();
-        $dataBarang = Barang::all();
+        $dataBarang = Barang::where('delete', null)->get();
 
         $sales = $dataSales ?? [];
         $barang  = $dataBarang ?? [];
@@ -621,7 +621,7 @@ class TransaksiController extends Controller
     {
         $dataPelanggan = Pelanggan::all();
         $dataSales = Sales::all();
-        $dataBarang = Barang::all();
+        $dataBarang = Barang::where('delete', null)->get();
         $dataPembayaran = Pembayaran::all();
 
         $pelanggan = $dataPelanggan ?? [];

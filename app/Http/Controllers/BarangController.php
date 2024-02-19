@@ -16,7 +16,7 @@ class BarangController extends Controller
 {
     public function oli(): View
     {
-        $data = Barang::with('inventory')->where('kategori_id', 1)->orderBy('nama_barang', 'ASC')->get();
+        $data = Barang::with('inventory')->where('kategori_id', 1)->orderBy('nama_barang', 'ASC')->where('delete', null)->get();
 
         $barang = $data ?? [];
 
@@ -26,7 +26,7 @@ class BarangController extends Controller
 
     public function ban(): View
     {
-        $data = Barang::with('inventory')->where('kategori_id', 2)->orderBy('nama_barang', 'ASC')->get();
+        $data = Barang::with('inventory')->where('kategori_id', 2)->orderBy('nama_barang', 'ASC')->where('delete', null)->get();
 
         $barang = $data ?? [];
 
@@ -36,7 +36,7 @@ class BarangController extends Controller
 
     public function sparepart(): View
     {
-        $data = Barang::with('inventory')->where('kategori_id', 3)->orderBy('nama_barang', 'ASC')->get();
+        $data = Barang::with('inventory')->where('kategori_id', 3)->orderBy('nama_barang', 'ASC')->where('delete', null)->get();
 
         $barang = $data ?? [];
 
@@ -67,13 +67,13 @@ class BarangController extends Controller
     public function download_list_barang($kategori)
     {
         if ($kategori == "oli") {
-            $dataBarang = Barang::with('inventory')->where('kategori_id', 1)->get();
+            $dataBarang = Barang::with('inventory')->where('kategori_id', 1)->where('delete', null)->get();
             $title = "OLI";
         } elseif ($kategori == "ban") {
-            $dataBarang = Barang::with('inventory')->where('kategori_id', 2)->get();
+            $dataBarang = Barang::with('inventory')->where('kategori_id', 2)->where('delete', null)->get();
             $title = "BAN";
         } else {
-            $dataBarang = Barang::with('inventory')->where('kategori_id', 3)->get();
+            $dataBarang = Barang::with('inventory')->where('kategori_id', 3)->where('delete', null)->get();
             $title = "SPAREPART";
         }
 
@@ -119,13 +119,9 @@ class BarangController extends Controller
 
     public function hapus_barang($id)
     {
-        $check = InboundDetail::where('barang_id', $id)->count();
-        if ($check != 0) {
-            Session::flash('error', 'Barang Sudah dilakukan pembelian, tidak dapat dihapus');
-            return back();
-        }
-        Barang::where('id', $id)->delete();
-        Inventory::where('barang_id', $id)->delete();
+        Barang::where('id', $id)->update([
+            'delete'    => 1
+        ]);
         Session::flash('success', 'Barang berhasil dihapus');
         return back();
     }

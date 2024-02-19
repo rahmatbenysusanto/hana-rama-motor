@@ -44,10 +44,10 @@ class InboundController extends Controller
         ]);
 
         // Cek apakah barang sudah ada dimaster barang
-        $check1 = Barang::where('sku', $request->post('sku'))->count();
+        $check1 = Barang::where('sku', $request->post('sku'))->where('delete', null)->count();
 
         if ($check1 == 0) {
-            $check2 = Barang::where('nama_barang', $request->post('nama_barang'))->count();
+            $check2 = Barang::where('nama_barang', $request->post('nama_barang'))->where('delete', null)->count();
             if ($check2 == 0) {
                 $barang = Barang::create([
                     'sku'           => $request->post('sku'),
@@ -75,7 +75,7 @@ class InboundController extends Controller
 
     public function tambah_pembelian_barang(): View
     {
-        $barang = Barang::with('kategori')->get();
+        $barang = Barang::with('kategori')->where('delete', null)->get();
         $supplier = Supplier::all();
 
         $title = "tambah stok barang";
